@@ -73,7 +73,7 @@ const AddCategory = () => {
   };
 
   return (
-    <div className="mx-2 bg-white rounded-xl p-4">
+    <div className="mx-2 bg-white rounded-lg p-4">
       <h2 className="text-2xl">Add Category</h2>
       <div className="mt-4">
         <div className="mb-4">
@@ -92,7 +92,7 @@ const AddCategory = () => {
             onChange={handleChangeCategory}
           />
         </div>
-        <form className="border p-2" onSubmit={onFileSubmit}>
+        <form className="border p-2 flex flex-col" onSubmit={onFileSubmit}>
           <input
             type="file"
             name="file"
@@ -133,10 +133,10 @@ const AddCategory = () => {
         </div>
       )}
 
-      <div className="my-4">
+      <div className="my-4 flex justify-center">
         <button
           onClick={handleSubmit}
-          className="bg-black hover:opacity-70 rounded-full text-white font-bold py-2 px-4"
+          className="bg-[#ff5a1f] hover:opacity-70 rounded-full text-white font-bold py-2 px-4"
         >
           Add Category
         </button>

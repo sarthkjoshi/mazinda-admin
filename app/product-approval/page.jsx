@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import ProductList from '@/components/product/ProductList';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import ProductList from "@/components/product/ProductList";
+import axios from "axios";
+import OvalLoader from "@/components/utility/OvalLoader";
 
 const ProductPage = () => {
+  const [productsLoading, setProductsLoading] = useState(true);
   const [products, setProducts] = useState([]);
-  const [currentFilter, setCurrentFilter] = useState(true); 
+  const [currentFilter, setCurrentFilter] = useState(true);
 
   const fetchProducts = async () => {
+    setProductsLoading(true);
     try {
       const response = await axios.post("/api/product/fetch-all-products");
       if (response.data.success) {
@@ -19,9 +22,11 @@ const ProductPage = () => {
     } catch (error) {
       console.error("Error fetching products: ", error);
     }
+    setProductsLoading(false);
   };
 
   useEffect(() => {
+    console.log('products')
     fetchProducts();
   }, []);
 
@@ -32,20 +37,35 @@ const ProductPage = () => {
         <div className="w-full bg-white py-4">
           <ul className="flex">
             <li
-              className={`border border-gray-400 rounded-lg mx-3 px-2 py-1 hover:bg-gray-300 hover:cursor-pointer ${currentFilter ? "bg-gray-300" : ""}`}
-              onClick={() => setCurrentFilter(true)} 
+              className={`border border-gray-400 rounded-lg mx-3 px-2 py-1 hover:bg-gray-300 hover:cursor-pointer ${
+                currentFilter ? "bg-gray-300" : ""
+              }`}
+              onClick={() => setCurrentFilter(true)}
             >
               Accepted
             </li>
             <li
-              className={`border border-gray-400 rounded-lg mx-3 px-2 py-1 hover:bg-gray-300 hover:cursor-pointer ${!currentFilter ? "bg-gray-300" : ""}`}
-              onClick={() => setCurrentFilter(false)} 
+              className={`border border-gray-400 rounded-lg mx-3 px-2 py-1 hover:bg-gray-300 hover:cursor-pointer ${
+                !currentFilter ? "bg-gray-300" : ""
+              }`}
+              onClick={() => setCurrentFilter(false)}
             >
               Pending
             </li>
           </ul>
         </div>
-        <ProductList products={products.filter(product => product.approvalStatus === currentFilter)} currentFilter={currentFilter} />
+        {productsLoading ? (
+          // Show the loader while products are still loading
+          <OvalLoader />
+        ) : (
+          // Show the ProductList component when loading is complete
+          <ProductList
+            products={products.filter(
+              (product) => product.approvalStatus === currentFilter
+            )}
+            currentFilter={currentFilter}
+          />
+        )}
       </div>
     </>
   );

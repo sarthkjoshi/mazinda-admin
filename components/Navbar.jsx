@@ -3,29 +3,23 @@
 import Link from "next/link";
 import MazindaLogo from "@/public/logo_mazinda.png";
 import Image from "next/image";
+import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
-  const pathname = usePathname();
+  let pathname = usePathname();
+
+  const handleLogout = () => {
+    Cookies.remove('admin_token');
+  }
 
   return (
-    <>
-      {!pathname.includes("auth") && (
-        <nav className="bg-white border-gray-200 dark:bg-gray-900 py-2">
-          <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <Link href={pathname.includes("admin") ? "/admin" : "store"} className="flex items-center">
-              <Image
-                width={120}
-                height={60}
-                src={MazindaLogo}
-                className="h-8 mr-3"
-                alt="Mazinda Logo"
-              />
-            </Link>
-          </div>
-        </nav>
-      )}
-    </>
+    <nav className="bg-white p-4 flex justify-between">
+      <Link href="/">
+        <Image width={120} src={MazindaLogo} alt="Mazinda Logo" />
+      </Link>
+      {!pathname.includes('auth') ? <Link href='/auth/login' onClick={handleLogout} className="bg-yellow-400 py-2 px-5 text-white rounded-full">Logout</Link> : null}
+    </nav>
   );
 };
 

@@ -46,7 +46,7 @@ const ProductList = ({ products, currentFilter }) => {
                 <td className="text-center py-2 whitespace-nowrap border-b border-gray-300">
                   <button
                     onClick={() =>
-                      router.push(`/admin/product-approval/product-details?id=${product._id}`)
+                      router.push(`/product-approval/product-details?id=${product._id}`)
                     }
                     className="mx-1 bg-yellow-300 hover:bg-yellow-500 text-gray-800 text-sm py-2 px-2 rounded-full"
                   >
