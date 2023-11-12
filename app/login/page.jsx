@@ -22,7 +22,7 @@ const LoginPage = () => {
       Cookies.set("admin_token", token, { expires: 1/24 });
 
       // Redirect to the admin dashboard or any other protected route
-      router.push("/dashboard");
+      router.push("/");
     } else {
       setError("Invalid username or password");
     }
@@ -31,7 +31,7 @@ const LoginPage = () => {
   useEffect(() => {
     let token = Cookies.get("admin_token");
     if (token){
-        router.push("/dashboard");
+        router.push("/");
     }
   }, [])
   
