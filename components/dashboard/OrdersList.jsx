@@ -50,6 +50,7 @@ const OrdersList = ({ filter }) => {
                           </div>
                         );
                       })}
+                      <span>Status: <span className="text-green-500 font-bold">{order.status}</span></span>
                     </Link>
                   </li>
                   <hr />
