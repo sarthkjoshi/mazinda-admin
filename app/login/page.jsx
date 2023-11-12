@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import cryptoRandomString from "crypto-random-string";
 import Cookies from "js-cookie";
@@ -12,8 +12,6 @@ const LoginPage = () => {
   const [error, setError] = useState("");
 
   const handleLogin = () => {
-    console.log("clicked");
-
     const validUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
     const validPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
 
@@ -24,11 +22,19 @@ const LoginPage = () => {
       Cookies.set("admin_token", token, { expires: 1/24 });
 
       // Redirect to the admin dashboard or any other protected route
-      router.push("/");
+      router.push("/dashboard");
     } else {
       setError("Invalid username or password");
     }
   };
+
+  useEffect(() => {
+    let token = Cookies.get("admin_token");
+    if (token){
+        router.push("/dashboard");
+    }
+  }, [])
+  
 
   return (
     <div className="w-screen h-[70vh] flex items-center justify-center">
