@@ -12,6 +12,8 @@ const LoginPage = () => {
   const [error, setError] = useState("");
 
   const handleLogin = () => {
+    console.log("clicked");
+
     const validUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
     const validPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
 
@@ -29,8 +31,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center">
-      <div className="flex flex-col items-center">
+    <div className="w-screen h-[70vh] flex items-center justify-center">
+      <div className="flex flex-col items-center bg-white p-4 rounded-xl">
         <p>Only admin of this website can access this webpage</p>
         <div>
           <label>

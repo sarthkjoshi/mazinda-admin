@@ -1,11 +1,19 @@
-import Overview from "@/components/dashboard/Overview";
+'use client'
+
+import OvalLoader from "@/components/utility/OvalLoader";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const Admin = () => {
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/dashboard");
+  }, []);
+
   return (
-    <>
-      <h1 className="font-semibold text-3xl my-2">Admin Dashboard</h1>
-      <Overview />
-    </>
+    <div className="flex items-center justify-center h-screen w-screen">
+      <OvalLoader />
+    </div>
   );
 };
 

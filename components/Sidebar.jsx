@@ -8,7 +8,7 @@ const Sidebar = () => {
   const pathname = usePathname();
   return (
     <>
-      {!pathname.includes("auth") ? (
+      {!pathname.includes("login") ? (
         <aside
           id="default-sidebar"
           className="top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
