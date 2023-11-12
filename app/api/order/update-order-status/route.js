@@ -13,7 +13,10 @@ export async function POST(req) {
         if (!order) {
             return NextResponse.json({ success: false, error: "Order doesn't exists" });
         }
+        
         order.status = status;
+        order.isDelivered = status === "delivered";
+        
         await order.save();
 
         return NextResponse.json({ success: true, message: "Orders status successfully", order });
