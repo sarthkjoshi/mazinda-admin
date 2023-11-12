@@ -1,3 +1,4 @@
+import CurrentOrders from "@/components/dashboard/CurrentOrders";
 import Overview from "@/components/dashboard/Overview";
 
 const Dashboard = () => {
@@ -5,6 +6,7 @@ const Dashboard = () => {
     <>
       <h1 className="font-semibold text-3xl my-2">Mazinda : Admin Dashboard</h1>
       <Overview />
+      <CurrentOrders />
     </>
   );
 };
