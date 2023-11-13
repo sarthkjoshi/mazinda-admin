@@ -1,6 +1,7 @@
 "use client";
 
 import EditIcon from '@mui/icons-material/Edit';
+import Link from 'next/link';
 
 import { useRouter } from 'next/navigation';
 
@@ -39,12 +40,12 @@ const AvailableStores = ( {stores} ) => {
                   {store.storeAddress.address}, {store.storeAddress.city}
                 </td>
                 <td className="text-center py-2 whitespace-nowrap border-b border-gray-300">
-                  <button
-                    onClick={() => router.push(`/admin/store-details?id=${store._id}`)}
+                  <Link
+                    href={`/store-details?id=${store._id}`}
                     className="mx-1 bg-yellow-300 hover:bg-yellow-700 text-gray-800 text-sm py-1 px-2 rounded-full"
                   >
                     <EditIcon className='text-white' />
-                  </button>
+                  </Link>
                 </td>
               </tr>
             ))}

@@ -19,7 +19,6 @@ export async function PUT(req) {
             store.alternateMobileNumber = storeData.alternateMobileNumber;
             store.email = storeData.email;
             store.password = storeData.password;
-            store.imageURI = storeData.imageURI;
             store.approvedStatus = storeData.approvedStatus;
 
             await store.save();
