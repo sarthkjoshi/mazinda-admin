@@ -38,7 +38,7 @@ const LoginPage = () => {
 
   return (
     <div className="w-screen h-[70vh] flex items-center justify-center">
-      <div className="flex flex-col items-center bg-white p-4 rounded-xl">
+      <form className="flex flex-col items-center bg-white p-4 rounded-xl" onSubmit={e => e.preventDefault()}>
         <p>Only admin of this website can access this webpage</p>
         <div>
           <label>
@@ -65,11 +65,12 @@ const LoginPage = () => {
         {error && <p style={{ color: "red" }}>{error}</p>}
         <button
           onClick={handleLogin}
+          type="submit"
           className="bg-[#F17E13] py-2 px-5 text-white shadow-md shadow-[#F17E13] mt-3 rounded-lg"
         >
           Login
         </button>
-      </div>
+      </form>
     </div>
   );
 };

@@ -8,6 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Slide } from 'react-toastify';
 
 import NextTopLoader from 'nextjs-toploader';
+import Cookies from 'js-cookie';
+import SidebarWrapper from '@/components/SidebarWrapper';
 
 const quicksand = Quicksand({
   weight: '500',
@@ -22,6 +24,7 @@ export const metadata = {
 
 
 export default function RootLayout({ children }) {
+  const token = Cookies.get('admin_token');
   return (
     <html lang="en">
       <body className={quicksand.className}>
@@ -42,7 +45,7 @@ export default function RootLayout({ children }) {
         <NextTopLoader color="#F17E13" showSpinner={false} />
         <div className="flex">
           <div className='hidden md:block'>
-            <Sidebar />
+            <SidebarWrapper />
           </div>
           <div className="flex-1 p-4 bg-gray-50">{children}</div>
         </div>
