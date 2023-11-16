@@ -8,7 +8,7 @@ const SidebarWrapper = () => {
     const [token, setToken] = useState(null);
 
     useEffect(() => {
-        const token = Cookies.get('token');
+        const token = Cookies.get('admin_token');
         setToken(token);
     }, [])
     
