@@ -3,11 +3,7 @@
 import EditIcon from '@mui/icons-material/Edit';
 import Link from 'next/link';
 
-import { useRouter } from 'next/navigation';
-
 const AvailableStores = ( {stores} ) => {
-  const router = useRouter()
-
   return (
     <div className="p-4 bg-white rounded-xl shadow-sm overflow-scroll">
       <div className="font-semibold text-xl text-gray-800">
@@ -19,7 +15,6 @@ const AvailableStores = ( {stores} ) => {
             <tr>
               <th className="py-3 text-gray-600">Store ID</th>
               <th className="py-3 text-gray-600">Store Name</th>
-              <th className="py-3 text-gray-600">Products</th>
               <th className="py-3 text-gray-600">Location</th>
               <th className="py-3 text-gray-600">Options</th>
             </tr>
@@ -32,9 +27,6 @@ const AvailableStores = ( {stores} ) => {
                 </td>
                 <td className="text-center py-2 whitespace-nowrap border-b border-gray-300">
                   {store.storeName}
-                </td>
-                <td className="text-center py-2 whitespace-nowrap border-b border-gray-300">
-                  {store.products}
                 </td>
                 <td className="text-center py-2 whitespace-nowrap border-b border-gray-300 text-green-500">
                   {store.storeAddress.address}, {store.storeAddress.city}
