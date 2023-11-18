@@ -30,7 +30,7 @@ const ProductList = ({ products, currentFilter }) => {
                   {product._id.slice(-5)}
                 </td>
                 <td className="text-center text-lg py-2 whitespace-nowrap border-b border-gray-300">
-                  {product.productName}
+                  {product.productName.slice(0,30)}...
                 </td>
                 <td className="text-center whitespace-nowrap border-b border-gray-300">
                   <span className="text-sm bg-gray-500 rounded-full px-2 py-1 text-white">
