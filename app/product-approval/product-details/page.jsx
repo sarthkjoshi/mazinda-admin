@@ -56,10 +56,13 @@ const ProductDetails = () => {
 
   const handleSaveClick = async () => {
     setIsEditing(false);
+
+    console.log(productData);
     try {
       const response = await axios.put("/api/product/update-product", {
         productData,
       });
+      console.log(response.data)
       if (response.data.success) {
         toast.success(response.data.message, { autoClose: 3000 });
       } else {

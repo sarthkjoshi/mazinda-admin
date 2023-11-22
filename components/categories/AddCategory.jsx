@@ -26,8 +26,6 @@ const AddCategory = () => {
       });
       const json = await res.json();
 
-      console.log(json)
-
       // handling the error
       if (!json.success) throw new Error(await res.text());
       else {

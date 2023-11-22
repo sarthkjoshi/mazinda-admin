@@ -6,20 +6,18 @@ export async function PUT(req) {
     try {
         const { productData } = await req.json();
 
-        console.log(productData);
-
         await connectDB()
 
         let product = await Product.findOne({ _id: productData._id });
 
+        console.log(product);
+
         if (product) {
-            
             product.productName = productData.productName;
             product.category = productData.category;
             product.subcategory = productData.subcategory;
             product.pricing = productData.pricing;
             product.password = productData.password;
-            product.imageURI = productData.imageURI;
             product.approvalStatus = productData.approvalStatus;
             product.trending = productData.trending;
             product.topDeal = productData.topDeal;
@@ -31,6 +29,6 @@ export async function PUT(req) {
             return NextResponse.json({ success: false, message: "Product doesn't exist" });
         }
     } catch (error) {
-        return NextResponse.json({ success: false, error: "An error occurred while fetching the product : " + error });
+        return NextResponse.json({ success: false, error: "An error occurred while updating the product : " + error });
     }
 }
