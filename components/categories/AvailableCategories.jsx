@@ -3,7 +3,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from 'react-toastify';
-import { useRouter } from "next/navigation";
 
 import {
   AlertDialog,
@@ -20,8 +19,6 @@ import {
 import { Input } from "@/components/ui/input";
 
 const AvailableCategories = () => {
-  const router = useRouter();
-
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [editingMode, setEditingMode] = useState(false);
@@ -68,17 +65,18 @@ const AvailableCategories = () => {
 
   const handleSaveClick = async () => {
     const { data } = await axios.post('/api/category/edit-category', { updated_category: selectedCategory });
-
-    console.log(data);
     if (data.success) {
       toast.success(data.message)
     } else {
       toast.error(data.error)
     }
 
-    router.refresh();
-
+    
     setEditingMode(false);
+
+    let temp_categories = categories.filter(category => category._id !== selectedCategory._id)
+    temp_categories.push(selectedCategory)
+    setCategories(temp_categories)
   };
 
   useEffect(() => {
