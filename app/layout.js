@@ -1,6 +1,5 @@
 import './globals.css'
 import { Quicksand } from 'next/font/google'
-import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 
 import { ToastContainer } from "react-toastify";
@@ -8,8 +7,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { Slide } from 'react-toastify';
 
 import NextTopLoader from 'nextjs-toploader';
-import Cookies from 'js-cookie';
 import SidebarWrapper from '@/components/SidebarWrapper';
+
+// import { Toaster } from "@/components/ui/toaster"
 
 const quicksand = Quicksand({
   weight: '500',
@@ -24,7 +24,6 @@ export const metadata = {
 
 
 export default function RootLayout({ children }) {
-  const token = Cookies.get('admin_token');
   return (
     <html lang="en">
       <body className={quicksand.className}>
@@ -49,6 +48,7 @@ export default function RootLayout({ children }) {
           </div>
           <div className="flex-1 p-4 bg-gray-50">{children}</div>
         </div>
+        {/* <Toaster /> */}
       </body>
     </html>
   )
