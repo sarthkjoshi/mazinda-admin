@@ -10,8 +10,6 @@ export async function PUT(req) {
 
         let product = await Product.findOne({ _id: productData._id });
 
-        console.log(product);
-
         if (product) {
             product.productName = productData.productName;
             product.category = productData.category;
@@ -22,6 +20,7 @@ export async function PUT(req) {
             product.trending = productData.trending;
             product.topDeal = productData.topDeal;
             product.isAvailable = productData.isAvailable;
+            product.description = productData.description;
 
             await product.save();
             return NextResponse.json({ success: true, message: "Product updated successfully" });
