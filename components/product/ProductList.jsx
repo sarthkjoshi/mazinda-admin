@@ -20,6 +20,7 @@ const ProductList = ({ products, currentFilter }) => {
               <th className="py-3 text-gray-600">Category</th>
               <th className="py-3 text-gray-600">MRP</th>
               <th className="py-3 text-gray-600">Cost Price</th>
+              <th className="py-3 text-gray-600">Sales Price</th>
               <th className="py-3 text-gray-600">Options</th>
             </tr>
           </thead>
@@ -30,10 +31,10 @@ const ProductList = ({ products, currentFilter }) => {
                   {product._id.slice(-5)}
                 </td>
                 <td className="text-center text-lg py-2 whitespace-nowrap border-b border-gray-300">
-                  {product.productName.slice(0,30)}...
+                  {product.productName.slice(0, 30)}...
                 </td>
                 <td className="text-center whitespace-nowrap border-b border-gray-300">
-                  <span className="text-sm bg-gray-500 rounded-full px-2 py-1 text-white">
+                  <span className="text-sm bg-gray-200 rounded-full px-2 py-1 text-gray-500">
                     {product.category}
                   </span>
                 </td>
@@ -43,10 +44,15 @@ const ProductList = ({ products, currentFilter }) => {
                 <td className="text-center py-2 whitespace-nowrap border-b border-gray-300 text-green-500">
                   ₹{product.pricing.costPrice}
                 </td>
+                <td className="text-center py-2 whitespace-nowrap border-b border-gray-300 text-green-500">
+                  ₹{product.pricing.salesPrice}
+                </td>
                 <td className="text-center py-2 whitespace-nowrap border-b border-gray-300">
                   <button
                     onClick={() =>
-                      router.push(`/product-approval/product-details?id=${product._id}`)
+                      router.push(
+                        `/product-approval/product-details?id=${product._id}`
+                      )
                     }
                     className="mx-1 bg-yellow-300 hover:bg-yellow-500 text-gray-800 text-sm py-2 px-2 rounded-full"
                   >
