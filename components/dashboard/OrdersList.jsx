@@ -9,18 +9,15 @@ const OrdersList = ({ filter }) => {
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState([]);
 
-  const fetchData = async () => {
-    setLoading(true);
-    const response = await axios.post("/api/order/fetch-all-orders", {
-      filter: "all",
-    });
-    console.log(response.data.orders);
-    setOrders(response.data.orders);
-    setLoading(false);
-  };
-
   useEffect(() => {
-    fetchData();
+    setLoading(true);
+    (async () => {
+      const { data } = await axios.post("/api/order/fetch-all-orders", {
+        filter: "all",
+      });
+      setOrders(data.orders);
+    })();
+    setLoading(false);
   }, []);
 
   const formatTimestamp = (timestamp) => {
@@ -42,15 +39,26 @@ const OrdersList = ({ filter }) => {
                         {formatTimestamp(order.createdAt)}
                       </span>
                       {order.cart.map((product) => {
-                        console.log(product)
+                        console.log(product);
                         return (
                           <div key={product.productName}>
-                            <span>{product.productName.slice(0, 25)}... </span>
-                            <span className="text-md ml-3 font-bold">Rs {product.salesPrice} /-</span>
+                            • {product.productName.slice(0, 25)}...{"  "}
+                            <span className="underline">
+                              <b>₹{product.pricing.salesPrice}</b>
+                            </span>
                           </div>
                         );
                       })}
-                      <span>Status: <span className="text-green-500 font-bold">{order.status}</span></span>
+
+                      <div className="mt-3 underline">
+                        Order Total: <b> ₹{order.pricing.total_salesPrice}</b>
+                      </div>
+                      <span>
+                        Status:{" "}
+                        <span className="text-green-500 font-bold">
+                          {order.status}
+                        </span>
+                      </span>
                     </Link>
                   </li>
                   <hr />

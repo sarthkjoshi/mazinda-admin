@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 const Order = () => {
   const searchParams = useSearchParams();
   const order_id = searchParams.get("id");
+  const myOrder = searchParams.get("order");
 
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState({});
@@ -17,13 +18,13 @@ const Order = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.post("/api/order/fetch-order-by-id", {
+      const { data } = await axios.post("/api/order/fetch-order-by-id", {
         id: order_id,
       });
 
-      console.log(response.data.order);
-      setOrder(response.data.order);
-      setEditableStatus(response.data.order.status);
+      console.log(data.order);
+      setOrder(data.order);
+      setEditableStatus(data.order.status);
       setLoading(false);
     } catch (err) {
       toast.info("Network Error");
@@ -66,11 +67,9 @@ const Order = () => {
                         alt="img"
                       />
                       <div className="flex flex-col ml-2">
-                        <span className="text-sm font-semibold">
-                          {item.productName}
-                        </span>
-                        <div className="text-gray-600">
-                          Rs {item.salesPrice}/-
+                        <span className="text-sm">{item.productName}</span>
+                        <div className="text-gray-600 font-semibold">
+                          Rs {item.pricing.salesPrice}/-
                         </div>
                       </div>
                     </div>
