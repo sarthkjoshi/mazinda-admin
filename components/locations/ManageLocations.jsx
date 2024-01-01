@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import OvalLoader from "@/components/utility/OvalLoader";
-import Switch from "react-switch";
+// import Switch from "react-switch";
 import Modal from "react-modal";
 
 const ManageLocations = () => {
@@ -77,7 +77,7 @@ const ManageLocations = () => {
                   className="px-10 py-6 border shadow rounded-2xl w-fit m-2 relative"
                   onClick={() => handleLocationClick(location)}
                 >
-                  <div className="absolute top-1 right-2">
+                  {/* <div className="absolute top-1 right-2">
                     <Switch
                       checked={location.available}
                       onChange={() => {}}
@@ -93,7 +93,7 @@ const ManageLocations = () => {
                       className="react-switch"
                       id="material-switch"
                     />
-                  </div>
+                  </div> */}
                   <span className="text-xl font-bold">{location.city}</span>
                 </li>
               ))}
