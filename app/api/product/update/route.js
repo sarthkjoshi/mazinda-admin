@@ -22,6 +22,7 @@ export async function PUT(req) {
       product.isAvailable = productData.isAvailable;
       product.description = productData.description;
       product.tags = productData.tags;
+      product.variants = productData.variants;
 
       await product.save();
       return NextResponse.json({

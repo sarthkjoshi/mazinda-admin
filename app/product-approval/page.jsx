@@ -1,69 +1,60 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ProductList from "@/components/product/ProductList";
 import axios from "axios";
 import OvalLoader from "@/components/utility/OvalLoader";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ProductPage = () => {
   const [productsLoading, setProductsLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [currentFilter, setCurrentFilter] = useState(true);
 
-  const fetchProducts = async () => {
-    setProductsLoading(true);
-    try {
-      const response = await axios.post("/api/product/fetch-all-products");
-      if (response.data.success) {
-        setProducts(response.data.products);
-      } else {
-        console.error("An error occurred while fetching products");
-      }
-    } catch (error) {
-      console.error("Error fetching products: ", error);
-    }
-    setProductsLoading(false);
-  };
-
   useEffect(() => {
-    fetchProducts();
+    (async () => {
+      try {
+        const { data } = await axios.post("/api/product/fetch-all-products");
+        if (data.success) {
+          setProducts(data.products);
+        } else {
+          console.error("An error occurred while fetching products");
+        }
+      } catch (error) {
+        console.error("Error fetching products: ", error);
+      } finally {
+        setProductsLoading(false);
+      }
+    })();
   }, []);
 
   return (
     <>
       <h1 className="font-semibold text-3xl my-2">Product Page</h1>
-      <div className="my-2">
-        <div className="w-full bg-white py-4">
-          <ul className="flex">
-            <li
-              className={`border border-gray-400 rounded-lg mx-3 px-2 py-1 hover:bg-gray-300 hover:cursor-pointer ${
-                currentFilter ? "bg-gray-300" : ""
-              }`}
-              onClick={() => setCurrentFilter(true)}
-            >
-              Accepted
-            </li>
-            <li
-              className={`border border-gray-400 rounded-lg mx-3 px-2 py-1 hover:bg-gray-300 hover:cursor-pointer ${
-                !currentFilter ? "bg-gray-300" : ""
-              }`}
-              onClick={() => setCurrentFilter(false)}
-            >
-              Pending
-            </li>
-          </ul>
-        </div>
+      <div className="w-full bg-white p-5 my-2 rounded-lg">
         {productsLoading ? (
-          // Show the loader while products are still loading
-          <OvalLoader />
+          <div className="w-full h-full flex items-center justify-center">
+            <OvalLoader />
+          </div>
         ) : (
-          // Show the ProductList component when loading is complete
-          <ProductList
-            products={products.filter(
-              (product) => product.approvalStatus === currentFilter
-            )}
-            currentFilter={currentFilter}
-          />
+          <Tabs defaultValue="approved">
+            <TabsList>
+              <TabsTrigger value="approved">Approved</TabsTrigger>
+              <TabsTrigger value="pending">Pending</TabsTrigger>
+            </TabsList>
+            <TabsContent className="my-5" value="approved">
+              <span>List of Approved Products</span>
+              <ProductList
+                products={products.filter((product) => product.approvalStatus)}
+              />
+            </TabsContent>
+            <TabsContent value="pending">
+              <span>List of Pending Products</span>
+              <ProductList
+                products={products.filter((product) => !product.approvalStatus)}
+              />
+            </TabsContent>
+          </Tabs>
         )}
       </div>
     </>

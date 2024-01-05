@@ -99,6 +99,7 @@ const ProductDetails = () => {
 
   const handleSaveClick = async () => {
     setIsEditing(false);
+    console.log(productData);
 
     try {
       const { data } = await axios.put("/api/product/update", {
@@ -163,6 +164,26 @@ const ProductDetails = () => {
       tags: updatedTags,
     }));
   };
+
+  useEffect(() => {
+    if (
+      Object.keys(productData).length &&
+      Object.keys(productData.variants).length
+    ) {
+      setProductData((prevData) => {
+        let variantsCopy = { ...prevData.variants };
+
+        variantsCopy[productData.combinationName].pricing.salesPrice =
+          productData.pricing.salesPrice;
+
+        return {
+          ...prevData,
+          variants: variantsCopy,
+        };
+      });
+    }
+    console.log(productData.variants);
+  }, [productData?.pricing?.salesPrice]);
 
   useEffect(() => {
     fetchCategories();
@@ -435,16 +456,18 @@ const ProductDetails = () => {
                       Are you absolutely sure?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      the product.
+                      This will permanently delete the product.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => handleProductDelete(productData._id)}
-                    >
-                      Continue
+                    <AlertDialogAction className="px-0">
+                      <Button
+                        onClick={() => handleProductDelete(productData._id)}
+                        variant="destructive"
+                      >
+                        Continue
+                      </Button>
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
