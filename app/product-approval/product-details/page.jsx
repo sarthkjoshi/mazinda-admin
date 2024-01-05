@@ -1,11 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import OvalLoader from "@/components/utility/OvalLoader";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 import {
   AlertDialog,
@@ -18,6 +23,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const ProductDetails = () => {
   const router = useRouter();
@@ -43,13 +58,21 @@ const ProductDetails = () => {
     }
   };
 
+  const getSubcategories = (selectedCategory) => {
+    // Find the selected category in the categories data
+    const selectedCategoryData = categories.find(
+      (category) => category.categoryName === selectedCategory
+    );
+    return selectedCategoryData ? selectedCategoryData.subcategories : [];
+  };
+
   const fetchProductData = async () => {
     try {
       const { data } = await axios.post("/api/product/fetch-product-by-id", {
         id,
       });
       if (data.success) {
-        setProductData(data.product);
+        setProductData({ ...data.product, tags: data.product.tags || [] });
         setEditedDescription(data.product.description);
         setLoading(false);
       } else {
@@ -59,11 +82,6 @@ const ProductDetails = () => {
       console.error("Error fetching product data: ", error);
     }
   };
-
-  useEffect(() => {
-    fetchCategories();
-    fetchProductData();
-  }, [id]);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -84,9 +102,9 @@ const ProductDetails = () => {
 
     try {
       const { data } = await axios.put("/api/product/update", {
-        productData: {...productData, description: editedDescription},
+        productData: { ...productData, description: editedDescription },
       });
-      
+
       if (data.success) {
         toast.success(data.message, { autoClose: 3000 });
       } else {
@@ -125,14 +143,31 @@ const ProductDetails = () => {
     }
   };
 
-  // Define a function to get subcategories for a selected category
-  const getSubcategories = (selectedCategory) => {
-    // Find the selected category in the categories data
-    const selectedCategoryData = categories.find(
-      (category) => category.categoryName === selectedCategory
-    );
-    return selectedCategoryData ? selectedCategoryData.subcategories : [];
+  const handleTagsChange = (e) => {
+    const newTags = e.target.value
+      .replace(/ /g, "")
+      .split(",")
+      .map((tag) => tag.trim());
+
+    setProductData((prevData) => ({
+      ...prevData,
+      tags: newTags || [], // Provide a default empty array if tags is undefined
+    }));
   };
+
+  const handleRemoveTag = (tag) => {
+    const updatedTags = (productData.tags || []).filter((t) => t !== tag);
+
+    setProductData((prevData) => ({
+      ...prevData,
+      tags: updatedTags,
+    }));
+  };
+
+  useEffect(() => {
+    fetchCategories();
+    fetchProductData();
+  }, [id]);
 
   return (
     <div className="container mx-auto p-4 bg-white shadow-sm rounded-xl">
@@ -145,7 +180,7 @@ const ProductDetails = () => {
             <form className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-5">
-                  <label className="block font-semibold">Trending:</label>
+                  <Label className="font-semibold">Trending:</Label>
                   <input
                     type="checkbox"
                     name="trending"
@@ -155,7 +190,7 @@ const ProductDetails = () => {
                   />
                 </div>
                 <div className="flex items-center gap-5">
-                  <label className="block font-semibold">Top Deal:</label>
+                  <Label className="font-semibold">Top Deal:</Label>
                   <input
                     type="checkbox"
                     name="topDeal"
@@ -167,19 +202,16 @@ const ProductDetails = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold">Product Name:</label>
-                  <input
+                  <Label className="font-semibold">Product Name:</Label>
+                  <Input
                     type="text"
                     name="productName"
                     value={productData.productName}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold">
-                    Approved Status:
-                  </label>
+                  <Label className="font-semibold">Approved Status:</Label>
                   <select
                     name="approvalStatus"
                     value={productData.approvalStatus}
@@ -197,33 +229,30 @@ const ProductDetails = () => {
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block font-semibold">MRP:</label>
-                  <input
+                  <Label className="font-semibold">MRP:</Label>
+                  <Input
                     type="text"
                     name="pricing.mrp"
                     value={productData.pricing.mrp}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold">Cost Price:</label>
-                  <input
+                  <Label className="font-semibold">Cost Price:</Label>
+                  <Input
                     type="text"
                     name="pricing.costPrice"
                     value={productData.pricing.costPrice}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold">Sales Price:</label>
-                  <input
+                  <Label className="font-semibold">Sales Price:</Label>
+                  <Input
                     type="text"
                     name="pricing.salesPrice"
                     value={productData.pricing.salesPrice}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -231,7 +260,7 @@ const ProductDetails = () => {
               {productData.category && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block font-semibold">Category:</label>
+                    <Label className="font-semibold">Category:</Label>
                     <select
                       name="category"
                       value={productData.category}
@@ -250,7 +279,7 @@ const ProductDetails = () => {
                   </div>
 
                   <div>
-                    <label className="block font-semibold">Subcategory:</label>
+                    <Label className="font-semibold">Subcategory:</Label>
                     <select
                       name="subcategory"
                       value={productData.subcategory}
@@ -267,22 +296,20 @@ const ProductDetails = () => {
                     </select>
                   </div>
 
-                  <div className="mt-4">
-                    <label className="block font-semibold">Description:</label>
+                  <div>
+                    <Label className="font-semibold">Description:</Label>
                     {editedDescription.map((desc, index) => (
                       <div
                         key={index}
-                        className="border flex flex-col p-2 rounded-md my-2"
+                        className="border flex flex-col p-2 rounded-md mb-2 gap-2"
                       >
-                        <input
-                          className="border border-black py-1 px-2 my-2 rounded-md"
+                        <Input
                           value={desc.heading}
                           onChange={(e) =>
                             handleDescriptionChange(index, "heading", e)
                           }
                         />
-                        <textarea
-                          className="border border-black py-1 px-2 my-2 rounded-md"
+                        <Textarea
                           value={desc.description}
                           onChange={(e) =>
                             handleDescriptionChange(index, "description", e)
@@ -291,112 +318,90 @@ const ProductDetails = () => {
                       </div>
                     ))}
                   </div>
+
+                  <div className="mb-4">
+                    <Label htmlFor="tags" className="font-semibold">
+                      Tags:
+                    </Label>
+                    <div className="flex items-center">
+                      <Input
+                        type="text"
+                        id="tags"
+                        name="tags"
+                        value={
+                          productData.tags ? productData.tags.join(", ") : ""
+                        }
+                        onChange={handleTagsChange}
+                        placeholder="Enter tags (comma separated)"
+                      />
+                    </div>
+                    {productData.tags.length ? (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {productData.tags.map((tag, index) => (
+                          <Badge variant="secondary" key={index}>
+                            {tag}
+                            <button
+                              type="button"
+                              variant="destructive"
+                              className="ml-2 text-red-500"
+                              onClick={() => handleRemoveTag(tag)}
+                            >
+                              x
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               )}
             </form>
           ) : (
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <div>
                 <div>
                   <div className="flex gap-5 items-center">
                     {productData.approvalStatus ? (
-                      <p className="text-lg my-2 bg-green-200 px-3 py-1 rounded-full w-fit text-green-800">
+                      <Badge className="bg-green-200 text-green-600">
                         Approved
-                      </p>
+                      </Badge>
                     ) : (
-                      <p className="text-lg my-2 bg-yellow-200 px-3 py-1 rounded-full w-fit text-yellow-500">
+                      <Badge className="bg-yellow-200 text-yellow-600">
                         Pending
-                      </p>
+                      </Badge>
                     )}
 
-                    <AlertDialog>
-                      <AlertDialogTrigger className="text-white font-bold bg-red-500 px-3 rounded-md h-9 hover:opacity-75">
-                        Delete
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Are you absolutely sure?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete the product.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleProductDelete(productData._id)}
-                          >
-                            Continue
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    {productData.topDeal ? (
+                      <Badge variant={"secondary"}>Top Deal</Badge>
+                    ) : null}
+
+                    {productData.trending ? (
+                      <Badge variant={"secondary"}>Trending</Badge>
+                    ) : null}
                   </div>
-                  <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
-                    Product Name:
-                  </p>
-                  <p className="inline-block mx-2 text-lg">
-                    {productData.productName}
-                  </p>
+                  <p className="my-5 px-3">{productData.productName}</p>
                 </div>
-                <div>
-                  <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
-                    Category:
-                  </p>
-                  <p className="inline-block mx-2 text-lg">
-                    {productData.category}
-                  </p>
-                </div>
-                <div>
-                  <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
-                    Subcategory:
-                  </p>
-                  <p className="inline-block mx-2 text-lg">
-                    {productData.subcategory}
-                  </p>
-                </div>
-                <div>
-                  <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
-                    MRP:
-                  </p>
-                  <p className="inline-block mx-2 text-lg">
-                    {productData.pricing.mrp}
-                  </p>
-                </div>
-                <div>
-                  <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
-                    Cost Price:
-                  </p>
-                  <p className="inline-block mx-2 text-lg">
-                    {productData.pricing.costPrice}
-                  </p>
-                </div>
-                <div>
-                  <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
-                    Sales Price:
-                  </p>
-                  <p className="inline-block mx-2 text-lg">
-                    {productData.pricing.salesPrice}
-                  </p>
-                </div>
-                <div>
-                  <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
-                    Trending:
-                  </p>
-                  <p className="inline-block mx-2 text-lg">
-                    {productData.trending ? "Yes" : "No"}
-                  </p>
-                </div>
-                <div>
-                  <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
-                    Top Deal:
-                  </p>
-                  <p className="inline-block mx-2 text-lg">
-                    {productData.topDeal ? "Yes" : "No"}
-                  </p>
-                </div>
+
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Subcategory</TableHead>
+                      <TableHead>MRP</TableHead>
+                      <TableHead>Cost Price</TableHead>
+                      <TableHead>Sales Price</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>{productData.category}</TableCell>
+                      <TableCell>{productData.subcategory}</TableCell>
+                      <TableCell>{productData.pricing.mrp}</TableCell>
+                      <TableCell>{productData.pricing.costPrice}</TableCell>
+                      <TableCell>{productData.pricing.salesPrice}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
               </div>
 
               <div className="self-center">
@@ -410,27 +415,49 @@ const ProductDetails = () => {
           )}
 
           {isEditing ? (
-            <div className="flex">
-              <button
-                onClick={handleSaveClick}
-                className="bg-[#fb691e] my-2 text-white px-4 py-2 rounded-md hover:opacity-70 focus:outline-none"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => setIsEditing(false)}
-                className="mx-3 border border-[#fb691e] my-2 text-[#fb691e] px-4 py-2 rounded-md hover:opacity-70 focus:outline-none"
-              >
+            <div className="flex gap-2 mt-4">
+              <Button variant="secondary" onClick={() => setIsEditing(false)}>
                 Cancel
-              </button>
+              </Button>
+              <Button className="px-6" onClick={handleSaveClick}>
+                Save
+              </Button>
             </div>
           ) : (
-            <button
-              onClick={handleEditClick}
-              className="bg-[#fb691e] my-5 text-white px-10 py-2 rounded-md hover:opacity-70 focus:outline-none"
-            >
-              Edit
-            </button>
+            <div className="flex gap-2 mt-4">
+              <AlertDialog>
+                <AlertDialogTrigger>
+                  <Button variant="destructive">Delete</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      the product.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleProductDelete(productData._id)}
+                    >
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              <Button
+                className="px-7"
+                variant="secondary"
+                onClick={handleEditClick}
+              >
+                Edit
+              </Button>
+            </div>
           )}
         </>
       )}
