@@ -107,6 +107,16 @@ const ProductDetails = () => {
       });
 
       if (data.success) {
+        if (Object.keys(productData.variants).length) {
+          try {
+            await axios.put("/api/product/update-variants", {
+              variantId: productData.variantId,
+              variants: productData.variants,
+            });
+          } catch (e) {
+            console.log("An error occurred!");
+          }
+        }
         toast.success(data.message, { autoClose: 3000 });
       } else {
         toast.error(data.message, { autoClose: 3000 });
