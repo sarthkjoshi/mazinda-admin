@@ -15,7 +15,7 @@ const OrdersList = ({ filter }) => {
       const { data } = await axios.post("/api/order/fetch-all-orders", {
         filter: "all",
       });
-      setOrders(data.orders);
+      setOrders(data.orders.reverse());
     })();
     setLoading(false);
   }, []);
@@ -30,7 +30,7 @@ const OrdersList = ({ filter }) => {
       {!loading ? (
         <ol>
           {orders.length ? (
-            orders.toReversed().map((order) => {
+            orders.map((order) => {
               return (
                 <React.Fragment key={order._id}>
                   <li className="px-2 py-1 my-1 text-gray-600 text-sm">
