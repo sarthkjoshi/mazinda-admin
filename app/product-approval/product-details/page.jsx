@@ -178,6 +178,7 @@ const ProductDetails = () => {
   useEffect(() => {
     if (
       Object.keys(productData).length &&
+      productData.variants &&
       Object.keys(productData.variants).length
     ) {
       setProductData((prevData) => {

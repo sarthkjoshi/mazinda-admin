@@ -9,10 +9,11 @@ import { toast } from "react-toastify";
 const Order = () => {
   const searchParams = useSearchParams();
   const order_id = searchParams.get("id");
-  const myOrder = searchParams.get("order");
 
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState({});
+  const [userInfo, setUserInfo] = useState({});
+  const [stores, setStores] = useState({});
   const [editableStatus, setEditableStatus] = useState("");
 
   const fetchData = async () => {
@@ -22,12 +23,31 @@ const Order = () => {
         id: order_id,
       });
 
-      console.log(data.order);
       setOrder(data.order);
       setEditableStatus(data.order.status);
-      setLoading(false);
     } catch (err) {
       toast.info("Network Error");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStoreDetails = async (storeId) => {
+    try {
+      const { data } = await axios.post("/api/store/fetch-store-by-id", {
+        id: storeId,
+      });
+
+      if (data.success) {
+        // Update the stores state with the fetched store details
+        setStores((prevStores) => ({
+          ...prevStores,
+          [storeId]: data.store,
+        }));
+      }
+    } catch (err) {
+      toast.error("Failed to fetch store details");
       console.error(err);
     }
   };
@@ -50,6 +70,32 @@ const Order = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (Object.keys(order).length) {
+      (async () => {
+        const { data } = await axios.post("/api/user/fetch-user-by-id", {
+          id: order.userId,
+        });
+
+        if (data.success) {
+          setUserInfo(data.user);
+        }
+      })();
+    }
+
+    // Fetch store details for each item in order.cart
+    if (order?.cart?.length > 0) {
+      order.cart.forEach((item) => {
+        fetchStoreDetails(item.storeId);
+      });
+    }
+  }, [order]);
+
+  useEffect(() => {
+    console.log(stores);
+  }, [stores]);
+
   return (
     <div className="bg-white p-4 rounded-xl">
       <h1 className="text-2xl md:mb-10">Order Details</h1>
@@ -59,7 +105,7 @@ const Order = () => {
             {order.cart.length > 0 &&
               order.cart.map((item) => {
                 return (
-                  <div key={item.productID}>
+                  <div key={item._id}>
                     <div className="flex rounded-lg px-2 py-1 items-center mx-2 relative">
                       <img
                         className="w-14 h-auto"
@@ -72,6 +118,13 @@ const Order = () => {
                           Rs {item.pricing.salesPrice}/-
                         </div>
                       </div>
+                    </div>
+
+                    <div className="text-gray-600 p-4">
+                      {/* Store: {stores[item.storeId].storeName || "Loading..."} */}
+                      <b> Store Name -</b> {stores[item.storeId]?.storeName}
+                      <br />
+                      <b>Store Contact-</b> {stores[item.storeId]?.mobileNumber}
                     </div>
                     <hr />
                   </div>
@@ -114,15 +167,32 @@ const Order = () => {
               {order.address.state}, {order.address.pincode}, IN
             </span>
             <br />
+            <span className="text-sm text-gray-700 font-bold">
+              Contact: {order.address.phone}
+            </span>
           </div>
 
           <div className="p-3 mt-1">
-            <span>Delivery by Mazinda</span>
-            <br />
             <span className="text-sm text-gray-600">
               Order ID: {order._id.slice(-5)}
             </span>
           </div>
+
+          {userInfo && Object.keys(userInfo).length ? (
+            <div className="p-3 mt-1">
+              <h1 className="font-bold">User Details</h1>
+
+              <div className="border rounded-sm p-2 mt-3">
+                <span className="text-sm">Name: {userInfo.name}</span>
+                <br />
+                <span className="text-sm">Email: {userInfo.email}</span>
+                <br />
+                <span className="text-sm">Phone: {userInfo.phoneNumber}</span>
+                <br />
+              </div>
+              <br />
+            </div>
+          ) : null}
           <hr />
 
           <div className="p-3">
