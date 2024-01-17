@@ -154,9 +154,8 @@ const ProductDetails = () => {
 
   const handleTagsChange = (e) => {
     const newTags = e.target.value
-      .replace(/ /g, "")
       .split(",")
-      .map((tag) => tag.trim());
+      .map((tag) => tag.trimStart());
 
     setProductData((prevData) => ({
       ...prevData,
