@@ -17,15 +17,17 @@ import { Button } from "@/components/ui/button";
 const ProductList = ({ products }) => {
   const router = useRouter();
 
-  const [productsData , setProductsData] = useState(products);
+  const [productsData, setProductsData] = useState(products);
 
   const handleCheckboxChange = async (event, productId, propertyName) => {
-    try{
+    try {
       const { data } = await axios.put("/api/product/update-trending-deal", {
-         productId:productId, propertyName:propertyName, propertyValue: event.target.checked  ,
+        productId: productId,
+        propertyName: propertyName,
+        propertyValue: event.target.checked,
       });
 
-      if(data.success){
+      if (data.success) {
         const updatedProducts = productsData.map((product) => {
           if (product._id === productId) {
             return {
@@ -37,14 +39,13 @@ const ProductList = ({ products }) => {
         });
         setProductsData(updatedProducts);
         toast.success(data.message, { autoClose: 3000 });
-      }else {
+      } else {
         toast.error(data.message, { autoClose: 3000 });
       }
-    }catch(error){
+    } catch (error) {
       console.error("Error saving product data: ", error);
-    } 
+    }
   };
-
 
   return (
     <div className="p-4 bg-white rounded-xl shadow-sm overflow-scroll">
@@ -72,24 +73,28 @@ const ProductList = ({ products }) => {
                 <TableCell>
                   <Badge variant={"outline"}>{product.category}</Badge>
                 </TableCell>
-                <TableCell>₹{product.pricing.mrp}</TableCell>
-                <TableCell>₹{product.pricing.costPrice}</TableCell>
-                <TableCell>₹{product.pricing.salesPrice}</TableCell>
+                <TableCell>₹{product?.pricing?.mrp}</TableCell>
+                <TableCell>₹{product?.pricing?.costPrice}</TableCell>
+                <TableCell>₹{product?.pricing?.salesPrice}</TableCell>
                 <TableCell>
-                   
                   <input
                     checked={product.topDeal}
-                    onChange={(e) => handleCheckboxChange(e, product._id, 'topDeal')}
-                    type="checkbox" 
-                    className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" />
+                    onChange={(e) =>
+                      handleCheckboxChange(e, product._id, "topDeal")
+                    }
+                    type="checkbox"
+                    className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                  />
                 </TableCell>
                 <TableCell>
-                   
-                  <input 
-                   checked={product.trending}
-                   onChange={(e) => handleCheckboxChange(e, product._id, 'trending')}
-                   className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
-                   type="checkbox"   />
+                  <input
+                    checked={product.trending}
+                    onChange={(e) =>
+                      handleCheckboxChange(e, product._id, "trending")
+                    }
+                    className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                    type="checkbox"
+                  />
                 </TableCell>
                 <TableCell>
                   <Button

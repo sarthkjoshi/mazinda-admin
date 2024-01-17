@@ -27,7 +27,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -99,7 +98,6 @@ const ProductDetails = () => {
 
   const handleSaveClick = async () => {
     setIsEditing(false);
-    console.log(productData);
 
     try {
       const { data } = await axios.put("/api/product/update", {
@@ -193,7 +191,6 @@ const ProductDetails = () => {
         };
       });
     }
-    console.log(productData.variants);
   }, [productData?.pricing?.salesPrice]);
 
   useEffect(() => {

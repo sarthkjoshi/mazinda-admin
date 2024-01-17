@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const ProductPage = () => {
   const [productsLoading, setProductsLoading] = useState(true);
   const [products, setProducts] = useState([]);
-  const [currentFilter, setCurrentFilter] = useState(true);
 
   useEffect(() => {
     (async () => {
