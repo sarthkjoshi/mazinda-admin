@@ -71,8 +71,17 @@ const ProductDetails = () => {
         id,
       });
       if (data.success) {
-        setProductData({ ...data.product, tags: data.product.tags || [] });
-        setEditedDescription(data.product.description);
+        const shop_res = await axios.post("/api/store/fetch-store-by-id", {
+          id: data.product.storeId,
+        });
+        if (shop_res.data.success) {
+          setProductData({
+            ...data.product,
+            tags: data.product.tags || [],
+            storeName: shop_res.data.store.storeName,
+          });
+          setEditedDescription(data.product.description);
+        }
         setLoading(false);
       } else {
         console.error("Error while fetching the product");
@@ -153,9 +162,7 @@ const ProductDetails = () => {
   };
 
   const handleTagsChange = (e) => {
-    const newTags = e.target.value
-      .split(",")
-      .map((tag) => tag.trimStart());
+    const newTags = e.target.value.split(",").map((tag) => tag.trimStart());
 
     setProductData((prevData) => ({
       ...prevData,
@@ -413,6 +420,7 @@ const ProductDetails = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>Sold By</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Subcategory</TableHead>
                       <TableHead>MRP</TableHead>
@@ -422,6 +430,7 @@ const ProductDetails = () => {
                   </TableHeader>
                   <TableBody>
                     <TableRow>
+                      <TableCell>{productData.storeName}</TableCell>
                       <TableCell>{productData.category}</TableCell>
                       <TableCell>{productData.subcategory}</TableCell>
                       <TableCell>{productData.pricing.mrp}</TableCell>
