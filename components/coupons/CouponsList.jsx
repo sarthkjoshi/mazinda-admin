@@ -1,94 +1,115 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Switch } from "@/components/ui/switch";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import { toast } from "sonner";
+import { Badge } from "../ui/badge";
 
 const CouponsList = () => {
-  const coupons = [
-    {
-      code: "SAVE20",
-      type: "percentage",
-      discount: 20,
-      maxLimit: 50,
-      minOrder: 100,
-      category: "Electronics",
-      status: true,
-    },
-    {
-      code: "FLAT50",
-      type: "rupee",
-      discount: 50,
-      maxLimit: 100,
-      minOrder: 200,
-      category: "Clothing",
-      status: false,
-    },
-    {
-      code: "SALE10",
-      type: "percentage",
-      discount: 10,
-      maxLimit: 30,
-      minOrder: 50,
-      category: "Home Decor",
-      status: true,
-    },
-  ];
-  const [couponList, setCouponList] = useState(coupons);
+  const [coupons, setCoupons] = useState([]);
 
   const handleToggleStatus = (index) => {
-    const updatedList = [...couponList];
+    const updatedList = [...coupons];
     updatedList[index].status = !updatedList[index].status;
-    setCouponList(updatedList);
+    setCoupons(updatedList);
   };
 
   const handleDeleteCoupon = (index) => {
-    const updatedList = [...couponList];
+    const updatedList = [...coupons];
     updatedList.splice(index, 1);
-    setCouponList(updatedList);
+    setCoupons(updatedList);
   };
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await axios.post("/api/coupon/fetch-all-coupons");
+        if (data.success) {
+          console.log(data.coupons);
+          setCoupons(data.coupons);
+        } else {
+          toast("An error occurred while fetching coupons");
+        }
+      } catch (err) {
+        toast("Oops, a network error occurred while fetching coupons", err);
+      }
+    })();
+  }, []);
+
   return (
-    <div className="my-4 h-screen overflow-y-scroll">
-      <table className="bg-white rounded-xl shadow-sm">
-        <thead>
-          <tr>
-            <th className="p-3">Coupon Code</th>
-            <th className="p-3">Type</th>
-            <th className="p-3">Discount</th>
-            <th className="p-3">Max Limit</th>
-            <th className="p-3">Min Order</th>
-            <th className="p-3">Category</th>
-            <th className="p-3">Status</th>
-            <th className="p-3">Options</th>
-          </tr>
-        </thead>
-        <tbody>
-          {couponList.map((coupon, index) => (
-            <tr key={coupon.code}>
-              <td className="p-3 text-orange-500">{coupon.code}</td>
-              <td className="p-3">{coupon.type === "percentage" ? "%" : "₹"}</td>
-              <td className="p-3">{coupon.discount}</td>
-              <td className="p-3">{coupon.maxLimit}</td>
-              <td className="p-3">{coupon.minOrder}</td>
-              <td className="p-3">{coupon.category}</td>
-              <td className="p-3">
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={coupon.status}
-                    onChange={() => handleToggleStatus(index)}
-                  />
-                  <span className="slider"></span>
-                </label>
-              </td>
-              <td className="p-3">
-                <button onClick={() => handleDeleteCoupon(index)}>
-                  Delete
-                </button>
-              </td>
-            </tr>
+    <div className="bg-white rounded-lg shadow-sm">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Code</TableHead>
+            <TableHead>Discount</TableHead>
+            <TableHead>Applied On</TableHead>
+            <TableHead>Max Limit</TableHead>
+            <TableHead>Min Order</TableHead>
+            <TableHead>Usage Limit</TableHead>
+            <TableHead>Categories</TableHead>
+            <TableHead>Cities</TableHead>
+            <TableHead>Active</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {coupons.map((coupon, index) => (
+            <TableRow key={index}>
+              <TableCell className="text-gray-500 font-extrabold">
+                {coupon.code}
+              </TableCell>
+              <TableCell>
+                {coupon.discountType === "percentage"
+                  ? `${coupon.discount}%`
+                  : `₹ ${coupon.discount}`}
+              </TableCell>
+              <TableCell>{coupon.discountOn}</TableCell>
+              <TableCell>
+                {coupon.discountType === "percentage"
+                  ? `₹ ${coupon.maxLimit}`
+                  : ""}
+              </TableCell>
+              <TableCell>₹ {coupon.minOrder}</TableCell>
+              <TableCell>{coupon.usageLimit}</TableCell>
+
+              <TableCell>
+                <div className="flex flex-col gap-1">
+                  {coupon.categories.map((category) => (
+                    <Badge key={category} variant={"secondary"}>
+                      {category}
+                    </Badge>
+                  ))}
+                </div>
+              </TableCell>
+
+              <TableCell>
+                <div className="flex flex-col gap-1">
+                  {coupon.cities.map((city) => (
+                    <Badge key={city} variant={"secondary"}>
+                      {city}
+                    </Badge>
+                  ))}
+                </div>
+              </TableCell>
+
+              <TableCell>
+                <Switch className="scale-75" checked={coupon.isActive} />
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 };

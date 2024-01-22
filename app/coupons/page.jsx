@@ -1,18 +1,17 @@
 import CouponsList from "@/components/coupons/CouponsList";
 import Overview from "@/components/coupons/Overview";
-import AddCoupon from '@/components/coupons/AddCoupon';
+import AddCoupon from "@/components/coupons/AddCoupon";
 
 const Coupons = () => {
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       <Overview />
-      <div className="flex">
-        <div className="my-5 w-2/3">
+      <div className="md:grid md:grid-cols-3 gap-3 flex flex-col">
+        <div className="col-span-2">
           <CouponsList />
         </div>
-        <div className="my-5 w-1/3">
-          <AddCoupon />
-        </div>
+
+        <AddCoupon />
       </div>
     </div>
   );
