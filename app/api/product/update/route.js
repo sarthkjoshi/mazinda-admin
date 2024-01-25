@@ -13,6 +13,7 @@ export async function PUT(req) {
     if (product) {
       product.storeId = productData.storeId;
       product.productName = productData.productName;
+      product.imagePaths = productData.imagePaths;
       product.category = productData.category;
       product.subcategory = productData.subcategory;
       product.pricing = productData.pricing;

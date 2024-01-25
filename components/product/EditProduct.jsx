@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AspectRatio } from "../ui/aspect-ratio";
 
 const EditProduct = ({ id }) => {
   const [loading, setLoading] = useState(true);
@@ -217,6 +218,38 @@ const EditProduct = ({ id }) => {
       ) : (
         <>
           <form className="space-y-4">
+            <div className="flex gap-5 items-center">
+              {productData.imagePaths.map((img_path) => (
+                <div className="relative">
+                  <span
+                    onClick={() => {
+                      const updatedImgPaths = productData.imagePaths.filter(
+                        (path) => path !== img_path
+                      );
+                      setProductData((prev) => ({
+                        ...prev,
+                        imagePaths: updatedImgPaths,
+                      }));
+                    }}
+                    className="text-sm border rounded-full px-[7px] py-0 absolute -top-2 -right-2 bg-red-500 text-white hover:bg-gray-200 cursor-pointer flex items-center justify-center"
+                  >
+                    ⨯
+                  </span>
+                  <img
+                    className="border aspect-square object-contain p-2 rounded-sm"
+                    height={100}
+                    width={100}
+                    src={img_path}
+                    alt="product"
+                  />
+                </div>
+              ))}
+              {/* <div>
+                <span className="bg-gray-200 text-white px-2 rounded-full text-2xl font-extrabold hover:bg-gray-300">
+                  +
+                </span>
+              </div> */}
+            </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <Label>Store</Label>
