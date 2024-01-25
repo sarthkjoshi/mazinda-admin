@@ -13,9 +13,20 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import EditProduct from "./EditProduct";
 
 const ProductList = ({ products }) => {
-  const router = useRouter();
+  const [selectedProductId, setSelectedProductId] = useState(null);
 
   const [productsData, setProductsData] = useState(products);
 
@@ -67,11 +78,18 @@ const ProductList = ({ products }) => {
 
           <TableBody>
             {productsData.map((product) => (
-              <TableRow key={product._id}>
+              <TableRow
+                key={product._id}
+                className={
+                  selectedProductId && selectedProductId === product._id
+                    ? "bg-yellow-300 hover:bg-yellow-200"
+                    : ""
+                }
+              >
                 <TableCell>{product._id.slice(-5)}</TableCell>
                 <TableCell>{product.productName.slice(0, 30)}...</TableCell>
                 <TableCell>
-                  <Badge variant={"outline"}>{product.category}</Badge>
+                  <Badge variant={"secondary"}>{product.category}</Badge>
                 </TableCell>
                 <TableCell>₹{product?.pricing?.mrp}</TableCell>
                 <TableCell>₹{product?.pricing?.costPrice}</TableCell>
@@ -97,16 +115,23 @@ const ProductList = ({ products }) => {
                   />
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant={"secondary"}
-                    onClick={() =>
-                      router.push(
-                        `/product-approval/product-details?id=${product._id}`
-                      )
-                    }
-                  >
-                    View / Edit
-                  </Button>
+                  <Drawer>
+                    <DrawerTrigger>
+                      <Button
+                        onClick={() => setSelectedProductId(product._id)}
+                        variant={"secondary"}
+                      >
+                        View / Edit
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent>
+                      <DrawerHeader>
+                        <DrawerTitle>Product Details</DrawerTitle>
+                      </DrawerHeader>
+
+                      <EditProduct id={product._id} />
+                    </DrawerContent>
+                  </Drawer>
                 </TableCell>
               </TableRow>
             ))}

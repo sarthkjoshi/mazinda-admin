@@ -220,9 +220,25 @@ const Order = () => {
                 <span>Delivery Fees</span>
                 <span>₹{order.pricing.delivery_fees} /-</span>
               </div>
+              {order.pricing.coupon_discount ? (
+                <div className="flex justify-between text-green-500">
+                  <span>Coupon Discount</span>
+                  <span>- ₹{order.pricing.coupon_discount} /-</span>
+                </div>
+              ) : null}
+              <hr className="my-3" />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>₹{order.pricing.total_salesPrice} /-</span>
+                <span>
+                  ₹
+                  {order.pricing.coupon_discount
+                    ? parseFloat(
+                        order.pricing.total_salesPrice -
+                          order.pricing?.coupon_discount
+                      )
+                    : parseFloat(order.pricing.total_salesPrice)}{" "}
+                  /-
+                </span>
               </div>
             </div>
           </div>
