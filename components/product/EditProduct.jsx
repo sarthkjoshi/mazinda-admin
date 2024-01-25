@@ -23,9 +23,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 const EditProduct = ({ id }) => {
   const [loading, setLoading] = useState(true);
   const [productData, setProductData] = useState({});
+  const [stores, setStores] = useState([]);
 
   const [editedDescription, setEditedDescription] = useState([]);
 
@@ -192,6 +201,15 @@ const EditProduct = ({ id }) => {
     fetchProductData();
   }, [id]);
 
+  useEffect(() => {
+    (async () => {
+      const { data } = await axios.post("/api/store/fetch-stores");
+      if (data.success) {
+        setStores(data.stores);
+      }
+    })();
+  }, []);
+
   return (
     <div className="container mx-auto p-4 bg-white shadow-sm rounded-xl">
       {loading ? (
@@ -199,7 +217,31 @@ const EditProduct = ({ id }) => {
       ) : (
         <>
           <form className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label>Store</Label>
+                <Select
+                  onValueChange={(value) =>
+                    setProductData((prev) => ({ ...prev, storeId: value }))
+                  }
+                  defaultValue={productData.storeId}
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={stores
+                        .filter((store) => store._id === productData.storeId)
+                        .map((store) => store.storeName)}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {stores.map((store) => (
+                      <SelectItem value={store._id}>
+                        {store.storeName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center gap-5">
                 <Label className="font-semibold">Trending:</Label>
                 <input

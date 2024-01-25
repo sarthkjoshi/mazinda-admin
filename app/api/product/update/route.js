@@ -11,6 +11,7 @@ export async function PUT(req) {
     let product = await Product.findOne({ _id: productData._id });
 
     if (product) {
+      product.storeId = productData.storeId;
       product.productName = productData.productName;
       product.category = productData.category;
       product.subcategory = productData.subcategory;
