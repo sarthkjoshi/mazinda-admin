@@ -124,12 +124,14 @@ const ProductList = ({ products }) => {
                         View / Edit
                       </Button>
                     </DrawerTrigger>
-                    <DrawerContent className="fixed bottom-0 left-0 right-0 max-h-[96%] overflow-auto">
+                    <DrawerContent className="fixed bottom-0 left-0 right-0 max-h-[96%] ">
                       <DrawerHeader>
                         <DrawerTitle>Product Details</DrawerTitle>
                       </DrawerHeader>
 
-                      <EditProduct id={product._id} />
+                      <div className="overflow-auto">
+                        <EditProduct id={product._id} />
+                      </div>
                     </DrawerContent>
                   </Drawer>
                 </TableCell>
