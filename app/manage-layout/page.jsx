@@ -1,5 +1,5 @@
 import EditImageForm from "@/components/EditImageForm";
-
+import LookingSectionLists from "@/components/looking-for/ImageLists";
 const ManageLayout = () => {
   const carouselImagePaths = [
     "https://mazindabucket.s3.ap-south-1.amazonaws.com/home-page/top-carousel/1.jpeg",
@@ -41,7 +41,11 @@ const ManageLayout = () => {
 
       <div className="border border-gray-200 p-5 rounded-lg flex flex-col gap-5">
         <h1 className="text-center text-xl">What are you looking for ?</h1>
-        {squareImagesPaths.map((imagePath, index) => (
+
+         
+        <LookingSectionLists/>
+
+        {/* {squareImagesPaths.map((imagePath, index) => (
           <div key={index} className="flex justify-evenly border-b-2 py-3">
             <img
               src={imagePath}
@@ -50,7 +54,7 @@ const ManageLayout = () => {
             />
             <EditImageForm existingImagePath={imagePath} />
           </div>
-        ))}
+        ))} */}
       </div>
 
       <div className="border border-gray-200 p-5 rounded-lg flex flex-col gap-5">
