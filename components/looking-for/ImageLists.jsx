@@ -19,7 +19,7 @@ const LookingSectionLists = () => {
   const [loading_data, setLoading_Data] = useState(true)
   const [sections, setSections] = useState([]);
   const [cities, setCities] = useState([]);
-
+  const [deletingState, setDeletingState] = useState({});
  
 
   const getSections = async (locations) => {
@@ -45,9 +45,39 @@ const LookingSectionLists = () => {
     }
   };
 
-  const deleteSection = async (section_id) => {
+
+  const getFilename = async (s3Url) => {
+    // const s3Url = "https://mazindabucket.s3.amazonaws.com/2024-02-16T095518042Z_electronics.png";
+    const url = new URL(s3Url);
+    const pathSegments = url.pathname.split('/');
+    const filename = pathSegments[pathSegments.length - 1];
+    return filename
+  }
+
+  const deleteSection = async (section_id,image_url) => {
+  
     const { data } = await axios.put("/api/manage-layouts/delete-looking-for-img", { section_id });
     if (data.success) {
+      if(image_url){
+        
+        var fileName = await getFilename(image_url);
+        const deleteResponse = await fetch("/api/upload/delete-image", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ fileName: fileName }),
+        });
+    
+        const deleteJson = await deleteResponse.json();
+
+        if (deleteJson.success) {
+          console.log("File deleted successfully:", deleteJson);
+        } else {
+          console.error("Error deleting file:", deleteJson.error);
+        }
+
+      }
       toast.success("Section deleted successfully");
       fetchLocationsAndSections();
     } else {
@@ -89,12 +119,12 @@ const LookingSectionLists = () => {
             {sections.map((section) => (
               <TableRow key={section._id}>
                 <TableCell>{section._id.slice(-5)}</TableCell>
-                <TableCell>{section.image}</TableCell>
+                <TableCell><img src={section.image} width="100" alt="Section Image" /></TableCell>
                 <TableCell>{section.link_type=='category' ? section.category_id.categoryName : 'No Link'}</TableCell>
                 <TableCell>{section.cityNames.join(", ")}</TableCell>
                 <TableCell>
-                    <Button onClick={()=>deleteSection(section._id)} className="mr-3 bg-red-500">Delete</Button>
-                    <Button>Edit</Button>
+                    <Button onClick={()=>deleteSection(section._id,section.image)} className="mr-3 bg-red-500">Delete</Button>
+                    {/* <Button>Edit</Button> */}
                 </TableCell>
               </TableRow>
             ))}

@@ -15,6 +15,7 @@ const AddLookingSection = () => {
         cityId: [],
     });
     const [locations, setLocations] = useState([]);
+    const [file, setFile] = useState();
 
     const fetchCategories = async () => {
         try {
@@ -67,9 +68,10 @@ const AddLookingSection = () => {
         e.preventDefault();
         setSubmitLoading(true);
         setErrors({}); // Reset errors object before validation
-
+        // console.log(sectionData);
+        // return;
         // Basic validation
-        if (!sectionData.image) {
+        if (!file) {
             setErrors(prevErrors => ({
                 ...prevErrors,
                 image: "Image is required"
@@ -106,39 +108,55 @@ const AddLookingSection = () => {
         }
 
         try{
-            var data = "";
-            if(sectionData.link_type === "category"){
-                data = {
-                    image: sectionData.image,
-                    link_type : sectionData.link_type,
-                    category_id : sectionData.categoryId,
-                    cityIds : sectionData.cityId
-                };
-            }else{
-                data = {
-                    image: sectionData.image,
-                    link_type : sectionData.link_type,
-                    cityIds : sectionData.cityId
-                };
-            }
-            
-            const response = await axios.post("/api/manage-layouts/add-looking-for-img", data);
 
-            if (response.data.success) {
-                toast.success(response.data.message, { autoClose: 3000 });
-                setTimeout(function(){
-                    window.location.reload();
-                },1000)
-            } else {
-                toast.error(response.data.message, { autoClose: 3000 });
-            }
-
-            setSectionData({
-                image: "",
-                link_type: "category",
-                categoryId: "",
-                cityId: [],
+            // first upload file
+            const data = new FormData();
+            data.set("file", file);
+            const res = await fetch("/api/upload", {
+              method: "POST",
+              body: data,
             });
+            const json = await res.json();
+            if (json.success){
+                var formData =  "";
+                if(sectionData.link_type === "category"){
+                    formData = {
+                        image: json.location,
+                        link_type : sectionData.link_type,
+                        category_id : sectionData.categoryId,
+                        cityIds : sectionData.cityId
+                    };
+                }else{
+                    formData = {
+                        image: json.location,
+                        link_type : sectionData.link_type,
+                        cityIds : sectionData.cityId
+                    };
+                }
+                
+                const response = await axios.post("/api/manage-layouts/add-looking-for-img", formData);
+    
+                if (response.data.success) {
+                    toast.success(response.data.message, { autoClose: 3000 });
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1000)
+                } else {
+                    toast.error(response.data.message, { autoClose: 3000 });
+                }
+    
+                setSectionData({
+                    image: "",
+                    link_type: "category",
+                    categoryId: "",
+                    cityId: [],
+                });
+            }else{
+                throw new Error(await res.text())
+            }
+
+
+            
 
         }catch(error){
             console.log(error);
@@ -162,7 +180,7 @@ const AddLookingSection = () => {
             <div className="col-span-full">
                 <label htmlFor="image" className="block text-sm font-medium leading-6 text-gray-900">Image</label>
                 <div className="mt-2 flex items-center gap-x-3">
-                  <Input onChange={handleChange} type="file" name="image" id="image"  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                  <Input onChange={(e) => setFile(e.target.files?.[0])} type="file" name="file" id="image"  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                 </div>
                 {errors.image && <span className="text-red-500">{errors.image}</span>}  
             </div>
@@ -219,7 +237,8 @@ const AddLookingSection = () => {
             
 
             <div className="col-span-full mt-4 text-center">
-               <Button  type="submit"  onClick={handleSaveClick}>Add New Image</Button>
+                {submitLoading ? <Button type="button">Please wait...</Button> : <Button  type="submit" onClick={handleSaveClick}>Add New Image</Button>  }
+               
             </div>
             
         </div>

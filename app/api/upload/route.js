@@ -21,7 +21,10 @@ export async function POST(request) {
     const currentDate = new Date();
     const timestamp = currentDate.toISOString().replace(/[:.]/g, "");
 
-    const fileNameWithTimestamp = `${timestamp}_${file.name}`;
+    // Replace spaces with underscores in the original filename
+    // const sanitizedFileName = file.name.replace(/ /g, "_");
+    const sanitizedFileName = file.name.replace(/ /g, "_").replace(/\((.*?)\)/g, "_$1")
+    const fileNameWithTimestamp = `${timestamp}_${sanitizedFileName}`;
 
     const params = {
       Bucket: bucketName,
