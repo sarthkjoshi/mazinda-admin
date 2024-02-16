@@ -54,6 +54,22 @@ const LookingSectionLists = () => {
     return filename
   }
 
+  const handleDelete = async (sectionId, imageUrl) => {
+    setDeletingState((prevDeletingState) => ({
+      ...prevDeletingState,
+      [sectionId]: true,
+    }));
+
+    try {
+      await deleteSection(sectionId, imageUrl);
+    } finally {
+      setDeletingState((prevDeletingState) => ({
+        ...prevDeletingState,
+        [sectionId]: false,
+      }));
+    }
+  };
+
   const deleteSection = async (section_id,image_url) => {
   
     const { data } = await axios.put("/api/manage-layouts/delete-looking-for-img", { section_id });
@@ -123,7 +139,14 @@ const LookingSectionLists = () => {
                 <TableCell>{section.link_type=='category' ? section.category_id.categoryName : 'No Link'}</TableCell>
                 <TableCell>{section.cityNames.join(", ")}</TableCell>
                 <TableCell>
-                    <Button onClick={()=>deleteSection(section._id,section.image)} className="mr-3 bg-red-500">Delete</Button>
+                    {/* <Button onClick={()=>deleteSection(section._id,section.image)} className="mr-3 bg-red-500">Delete</Button> */}
+                    <Button
+                      onClick={() => handleDelete(section._id, section.image)}
+                      className="mr-3 bg-red-500"
+                      disabled={deletingState[section._id]}
+                    >
+                      {deletingState[section._id] ? 'Please wait...' : 'Delete'}
+                    </Button>
                     {/* <Button>Edit</Button> */}
                 </TableCell>
               </TableRow>
