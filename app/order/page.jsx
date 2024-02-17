@@ -117,6 +117,9 @@ const Order = () => {
                         <div className="text-gray-600 font-semibold">
                           Rs {item.pricing.salesPrice}/-
                         </div>
+                        <span className="text-gray-600 text-sm">
+                          Quantity: {item.quantity}
+                        </span>
                       </div>
                     </div>
 

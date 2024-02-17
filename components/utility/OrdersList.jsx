@@ -1,9 +1,11 @@
 "use client";
 
 import axios from "axios";
+import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import OvalLoader from "../utility/OvalLoader";
+import OvalLoader from "./OvalLoader";
+// import MagnifyingLoader from "../Loading-Spinners/MagnifyingLoader";
 
 const OrdersList = ({ filter }) => {
   const [loading, setLoading] = useState(true);
@@ -11,18 +13,24 @@ const OrdersList = ({ filter }) => {
 
   useEffect(() => {
     setLoading(true);
+
     (async () => {
       const { data } = await axios.post("/api/order/fetch-all-orders", {
         filter: "all",
       });
-      setOrders(data.orders.reverse());
+      if (data.success) {
+        setOrders(data.orders);
+      } else {
+        console.log("An error occurred" + data.error);
+      }
     })();
+
     setLoading(false);
   }, []);
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
-    return date.toLocaleString(); // Adjust options as needed
+    return date.toLocaleString();
   };
 
   return (
@@ -71,6 +79,7 @@ const OrdersList = ({ filter }) => {
           )}
         </ol>
       ) : (
+        // <MagnifyingLoader />
         <OvalLoader />
       )}
     </div>

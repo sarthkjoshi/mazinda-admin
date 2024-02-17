@@ -45,6 +45,7 @@
     "nextjs-toploader": "^1.6.4",
     "react": "^18",
     "react-dom": "^18",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-loader-spinner": "^5.4.5",
     "react-modal": "^3.16.1",
     "react-multi-select-component": "^4.3.4",
