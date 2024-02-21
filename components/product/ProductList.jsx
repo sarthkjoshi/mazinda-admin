@@ -139,6 +139,11 @@ const ProductList = ({ products }) => {
             ))}
           </TableBody>
         </Table>
+        {productsData.length==0 && (
+            <div className="">
+                <h4 className="text-center font-bold">No product found</h4>
+            </div>
+          )}
       </div>
     </div>
   );
