@@ -24,7 +24,7 @@ export async function POST(req) {
     if (selectedCategory !== "") {
       filters.category = selectedCategory;
     }
-    console.log(filters);
+    // console.log(filters);
     let products = await Product.find(filters).skip(skip).limit(pageSize);
     return NextResponse.json({ success: true, products });
   } catch (error) {
