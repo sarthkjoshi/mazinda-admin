@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const BulkUploadRequest = () => {
   const [requests, setRequests] = useState([]);
@@ -43,11 +44,11 @@ const BulkUploadRequest = () => {
                 </a>
               </Button>
               <Button variant="secondary">
-                <a
+                <Link
                   href={`/bulk-upload-requests/view?request_id=${request._id}`}
                 >
                   View
-                </a>
+                </Link>
               </Button>
             </div>
           </div>
