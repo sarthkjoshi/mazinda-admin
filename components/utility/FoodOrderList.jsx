@@ -9,6 +9,11 @@ import OvalLoader from "./OvalLoader";
 
 const MyOrdersPage = () => {
   const router = useRouter();
+
+  //for delivery boys
+  const [deliveryBoys, setDeliveryBoys] = useState([]);
+  const [selectedDeliveryBoy, setSelectedDeliveryBoy] = useState("");
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,6 +80,19 @@ const MyOrdersPage = () => {
 
     fetchOrders();
   }, [router, page]); // Include router as a dependency
+
+  useEffect(() => {
+    // Fetch list of delivery boys when component mounts
+    axios
+      .get("/api/deliveryBoys")
+      .then((response) => {
+        console.log(response.data);
+        setDeliveryBoys(response.data.deliveryBoys);
+      })
+      .catch((error) => {
+        console.error("Error fetching delivery boys:", error);
+      });
+  }, []);
 
   const toggleExpand = (orderId) => {
     setExpandedOrderId(expandedOrderId === orderId ? null : orderId);
@@ -170,7 +188,21 @@ const MyOrdersPage = () => {
     }
     setAllDeliveredButtonLoading(false);
   };
-
+  const handleAssignDeliveryBoy = (orderId) => {
+    // Send request to backend to update order with selected delivery boy
+    axios
+      .put(`/api/deliveryBoys`, {
+        deliveryBoyId: selectedDeliveryBoy,
+        orderId,
+      })
+      .then((response) => {
+        // Handle success
+        alert("Order assigned to delivery boy successfully");
+      })
+      .catch((error) => {
+        console.error("Error assigning delivery boy to order:", error);
+      });
+  };
   return (
     <div className="bg-white p-4 shadow rounded-lg">
       <div className="flex gap-2 mb-2">
@@ -389,6 +421,31 @@ const MyOrdersPage = () => {
                             </button>
                           </div>
                         )}
+                      </div>
+
+                      <div className="flex items-center justify-center">
+                        <select
+                          value={selectedDeliveryBoy}
+                          onChange={(e) =>
+                            setSelectedDeliveryBoy(e.target.value)
+                          }
+                        >
+                          <option value="">Select Delivery Boy</option>
+                          {deliveryBoys.map((deliveryBoy) => (
+                            <option
+                              key={deliveryBoy._id}
+                              value={deliveryBoy._id}
+                            >
+                              {deliveryBoy.name}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          className="bg-gray-500 px-2 py-1 rounded-md text-white text-sm mx-1"
+                          onClick={(e) => handleAssignDeliveryBoy(order._id)}
+                        >
+                          Assign
+                        </button>
                       </div>
                     </div>
                   </div>
