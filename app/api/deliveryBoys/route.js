@@ -2,14 +2,14 @@ import connectDB from "@/libs/mongoose";
 import { NextResponse } from "next/server";
 import DeliveryBoy from "@/models/DeliveryBoy";
 import FoodOrder from "@/models/FoodOrder";
-
+import axios from "axios";
 export async function GET(req) {
   try {
     // Connecting to database
     await connectDB();
 
     const deliveryBoys = await DeliveryBoy.find({});
-    console.log(deliveryBoys);
+
     return NextResponse.json({
       success: true,
       message: "DeliveryBoys fetched successfully",
@@ -27,21 +27,47 @@ export async function PUT(req) {
   try {
     // Connecting to database
     await connectDB();
-    const { orderId, deliveryBoyId } = await req.json();
-    const order = await FoodOrder.findByIdAndUpdate(
+    const { deliveryBoyId, orderId, vendorName, products, address, amount } =
+      await req.json();
+
+    const productsList = Object.entries(products)
+      .map(
+        ([productName, details]) => `\n\t${productName} - ${details.quantity}\n`
+      )
+      .join("");
+
+    const message = `*New Order (id: ${orderId.slice(
+      -4
+    )})* \n \n *Pickup*: ${vendorName} \n \n *Products:* \n ${productsList} \n \n *Delivery Location*: \n \n *Phone Number*: ${
+      address.phoneNumber
+    } \n \n *Address*: ${address.hostel}, ${
+      address.campus
+    } \n \n *Amount*: ${amount} \n`;
+    console.log(message);
+    //asssignment
+    await FoodOrder.findByIdAndUpdate(
       orderId,
       { deliveryBoyId },
       { new: true }
     );
-
-    return NextResponse.json({
+    const res = NextResponse.json({
       success: true,
       message: "Assigned successfully",
     });
+
+    const response = await axios.post(
+      `https://wapp.powerstext.in/api/send_group?group_id=120363193471121815@g.us&type=text&message=${message}&instance_id=6534CC8282DA7&access_token=65338e1dbc831`
+    );
+
+    if (response.data.status === "success") {
+      console.log("message dilevered");
+    }
+
+    return res;
   } catch (error) {
     return NextResponse.json({
       success: false,
-      message: "An error occurred while assigning the deliveryBoys",
+      message: `An error occurred while assigning the deliveryBoys ${error}`,
       error,
     });
   }

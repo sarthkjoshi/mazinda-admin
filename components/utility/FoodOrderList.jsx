@@ -188,16 +188,28 @@ const MyOrdersPage = () => {
     }
     setAllDeliveredButtonLoading(false);
   };
-  const handleAssignDeliveryBoy = (orderId) => {
+  const handleAssignDeliveryBoy = (
+    orderId,
+    vendorName,
+    products,
+    address,
+    amount
+  ) => {
     // Send request to backend to update order with selected delivery boy
     axios
       .put(`/api/deliveryBoys`, {
         deliveryBoyId: selectedDeliveryBoy,
         orderId,
+        vendorName,
+        products,
+        address,
+        amount,
       })
       .then((response) => {
         // Handle success
-        alert("Order assigned to delivery boy successfully");
+        if (response.data.success === true) {
+          alert("Order assigned to delivery boy successfully");
+        }
       })
       .catch((error) => {
         console.error("Error assigning delivery boy to order:", error);
@@ -295,10 +307,11 @@ const MyOrdersPage = () => {
                     <p className="text-gray-600">
                       <strong>Vendor:</strong> {order.vendorName}
                     </p>
-                    <p className="text-gray-600">
+                    {/* no user name */}
+                    {/* <p className="text-gray-600">
                       <strong>User:</strong>{" "}
                       {order.userName ? order.userName : ""}
-                    </p>
+                    </p> */}
                     <p className="text-gray-600">
                       <strong>Delivery Address:</strong>
                     </p>
@@ -347,7 +360,6 @@ const MyOrdersPage = () => {
                         </tbody>
                       </table>
                     </div>
-
                     <div
                       className="flex mt-2"
                       onClick={(event) => {
@@ -442,7 +454,16 @@ const MyOrdersPage = () => {
                         </select>
                         <button
                           className="bg-gray-500 px-2 py-1 rounded-md text-white text-sm mx-1"
-                          onClick={(e) => handleAssignDeliveryBoy(order._id)}
+                          onClick={(e) =>
+                            handleAssignDeliveryBoy(
+                              order._id,
+                              order.vendorName,
+                              order.products,
+                              order.address,
+                              order.amount
+                            )
+                          }
+                          disabled={!selectedDeliveryBoy.length}
                         >
                           Assign
                         </button>
