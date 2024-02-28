@@ -6,9 +6,15 @@ import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { toast } from "react-toastify";
 import OvalLoader from "./OvalLoader";
+import Mode from "./Mode";
 
 const MyOrdersPage = () => {
   const router = useRouter();
+
+  //for delivery boys
+  const [deliveryBoys, setDeliveryBoys] = useState([]);
+  const [selectedDeliveryBoy, setSelectedDeliveryBoy] = useState("");
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,6 +81,18 @@ const MyOrdersPage = () => {
 
     fetchOrders();
   }, [router, page]); // Include router as a dependency
+
+  useEffect(() => {
+    // Fetch list of delivery boys when component mounts
+    axios
+      .get("/api/deliveryBoys")
+      .then((response) => {
+        setDeliveryBoys(response.data.deliveryBoys);
+      })
+      .catch((error) => {
+        console.error("Error fetching delivery boys:", error);
+      });
+  }, []);
 
   const toggleExpand = (orderId) => {
     setExpandedOrderId(expandedOrderId === orderId ? null : orderId);
@@ -170,7 +188,45 @@ const MyOrdersPage = () => {
     }
     setAllDeliveredButtonLoading(false);
   };
+  const handleAssignDeliveryBoy = (
+    orderId,
+    vendorName,
+    products,
+    address,
+    amount
+  ) => {
+    // Find the selected delivery boy object
+    const selectedDeliveryBoyObj = deliveryBoys.find(
+      (deliveryBoy) => deliveryBoy._id === selectedDeliveryBoy
+    );
 
+    if (!selectedDeliveryBoyObj) {
+      console.error("Selected delivery boy not found");
+      return;
+    }
+
+    const { groupid } = selectedDeliveryBoyObj;
+    console.log("groupid", groupid);
+    axios
+      .put(`/api/deliveryBoys`, {
+        deliveryBoyId: selectedDeliveryBoy,
+        groupid, // Use groupId from selected delivery boy object
+        orderId,
+        vendorName,
+        products,
+        address,
+        amount,
+      })
+      .then((response) => {
+        // Handle success
+        if (response.data.success === true) {
+          alert("Order assigned to delivery boy successfully");
+        }
+      })
+      .catch((error) => {
+        console.error("Error assigning delivery boy to order:", error);
+      });
+  };
   return (
     <div className="bg-white p-4 shadow rounded-lg">
       <div className="flex gap-2 mb-2">
@@ -187,7 +243,9 @@ const MyOrdersPage = () => {
           {allDeliveredButtonLoading ? <OvalLoader /> : "Set Delivered"}
         </button>
       </div>
-
+      <div>
+        <Mode />
+      </div>
       {loading ? (
         <OvalLoader />
       ) : error ? (
@@ -263,10 +321,11 @@ const MyOrdersPage = () => {
                     <p className="text-gray-600">
                       <strong>Vendor:</strong> {order.vendorName}
                     </p>
-                    <p className="text-gray-600">
+                    {/* no user name */}
+                    {/* <p className="text-gray-600">
                       <strong>User:</strong>{" "}
                       {order.userName ? order.userName : ""}
-                    </p>
+                    </p> */}
                     <p className="text-gray-600">
                       <strong>Delivery Address:</strong>
                     </p>
@@ -315,7 +374,6 @@ const MyOrdersPage = () => {
                         </tbody>
                       </table>
                     </div>
-
                     <div
                       className="flex mt-2"
                       onClick={(event) => {
@@ -389,6 +447,40 @@ const MyOrdersPage = () => {
                             </button>
                           </div>
                         )}
+                      </div>
+
+                      <div className="flex items-center justify-center">
+                        <select
+                          value={selectedDeliveryBoy}
+                          onChange={(e) =>
+                            setSelectedDeliveryBoy(e.target.value)
+                          }
+                        >
+                          <option value="">Select Delivery Boy</option>
+                          {deliveryBoys.map((deliveryBoy) => (
+                            <option
+                              key={deliveryBoy._id}
+                              value={deliveryBoy._id}
+                            >
+                              {deliveryBoy.name}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          className="bg-gray-500 px-2 py-1 rounded-md text-white text-sm mx-1"
+                          onClick={(e) =>
+                            handleAssignDeliveryBoy(
+                              order._id,
+                              order.vendorName,
+                              order.products,
+                              order.address,
+                              order.amount
+                            )
+                          }
+                          disabled={!selectedDeliveryBoy.length}
+                        >
+                          Assign
+                        </button>
                       </div>
                     </div>
                   </div>
