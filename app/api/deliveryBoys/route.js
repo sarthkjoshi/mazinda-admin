@@ -36,13 +36,21 @@ export async function PUT(req) {
       )
       .join("");
 
-    const message = `*New Order (id: ${orderId.slice(
-      -4
-    )})* \n \n *Pickup*: ${vendorName} \n \n *Products:* \n ${productsList} \n \n *Delivery Location*: \n \n *Phone Number*: ${
-      address.phoneNumber
-    } \n \n *Address*: ${address.hostel}, ${
-      address.campus
-    } \n \n *Amount*: ${amount} \n`;
+    const message = `*New Order (id: ${orderId.slice(-4)})*
+
+      *Pickup*: ${vendorName}
+ 
+      *Products*: \n${productsList}
+ 
+      *Delivery Location*: 
+        
+        *Phone Number*: ${address.phoneNumber}
+        *Address*: ${address.hostel}, ${address.campus}
+
+      *Amount*: ${amount}
+      *Open in browser*: ${process.env.NEXT_BASE_API_URL}
+      `;
+
     console.log(message);
     //asssignment
     await FoodOrder.findByIdAndUpdate(
@@ -55,13 +63,13 @@ export async function PUT(req) {
       message: "Assigned successfully",
     });
 
-    const response = await axios.post(
-      `https://wapp.powerstext.in/api/send_group?group_id=120363193471121815@g.us&type=text&message=${message}&instance_id=6534CC8282DA7&access_token=65338e1dbc831`
-    );
+    // const response = await axios.post(
+    //   `https://wapp.powerstext.in/api/send_group?group_id=120363193471121815@g.us&type=text&message=${message}&instance_id=6534CC8282DA7&access_token=65338e1dbc831`
+    // );
 
-    if (response.data.status === "success") {
-      console.log("message dilevered");
-    }
+    // if (response.data.status === "success") {
+    //   console.log("message dilevered");
+    // }
 
     return res;
   } catch (error) {

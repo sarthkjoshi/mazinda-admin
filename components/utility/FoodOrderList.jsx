@@ -6,6 +6,7 @@ import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { toast } from "react-toastify";
 import OvalLoader from "./OvalLoader";
+import Mode from "./Mode";
 
 const MyOrdersPage = () => {
   const router = useRouter();
@@ -231,7 +232,9 @@ const MyOrdersPage = () => {
           {allDeliveredButtonLoading ? <OvalLoader /> : "Set Delivered"}
         </button>
       </div>
-
+      <div>
+        <Mode />
+      </div>
       {loading ? (
         <OvalLoader />
       ) : error ? (
