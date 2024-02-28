@@ -87,7 +87,6 @@ const MyOrdersPage = () => {
     axios
       .get("/api/deliveryBoys")
       .then((response) => {
-        console.log(response.data);
         setDeliveryBoys(response.data.deliveryBoys);
       })
       .catch((error) => {
@@ -196,10 +195,22 @@ const MyOrdersPage = () => {
     address,
     amount
   ) => {
-    // Send request to backend to update order with selected delivery boy
+    // Find the selected delivery boy object
+    const selectedDeliveryBoyObj = deliveryBoys.find(
+      (deliveryBoy) => deliveryBoy._id === selectedDeliveryBoy
+    );
+
+    if (!selectedDeliveryBoyObj) {
+      console.error("Selected delivery boy not found");
+      return;
+    }
+
+    const { groupid } = selectedDeliveryBoyObj;
+    console.log("groupid", groupid);
     axios
       .put(`/api/deliveryBoys`, {
         deliveryBoyId: selectedDeliveryBoy,
+        groupid, // Use groupId from selected delivery boy object
         orderId,
         vendorName,
         products,

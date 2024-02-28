@@ -27,8 +27,15 @@ export async function PUT(req) {
   try {
     // Connecting to database
     await connectDB();
-    const { deliveryBoyId, orderId, vendorName, products, address, amount } =
-      await req.json();
+    const {
+      deliveryBoyId,
+      groupid,
+      orderId,
+      vendorName,
+      products,
+      address,
+      amount,
+    } = await req.json();
 
     const productsList = Object.entries(products)
       .map(
@@ -48,7 +55,7 @@ export async function PUT(req) {
         *Address*: ${address.hostel}, ${address.campus}
 
       *Amount*: ${amount}
-      *Open in browser*: ${process.env.NEXT_BASE_API_URL}
+      *Open in browser*: enter your url
       `;
 
     console.log(message);
@@ -62,7 +69,8 @@ export async function PUT(req) {
       success: true,
       message: "Assigned successfully",
     });
-
+    console.log(groupid);
+    // REPLACE group_id with groupid
     // const response = await axios.post(
     //   `https://wapp.powerstext.in/api/send_group?group_id=120363193471121815@g.us&type=text&message=${message}&instance_id=6534CC8282DA7&access_token=65338e1dbc831`
     // );

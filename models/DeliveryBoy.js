@@ -19,6 +19,10 @@ const DeliveryBoySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    groupid: {
+      type: String,
+      default: "abcdef",
+    },
   },
   { timestamps: true }
 );
