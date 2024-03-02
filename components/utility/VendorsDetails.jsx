@@ -15,115 +15,10 @@ import {
 import OvalLoader from "./OvalLoader";
 
 const VendorDetailsPage = () => {
-  const [vendorData, setVendorData] = useState([]);
-  const [openVendorId, setOpenVendorId] = useState(null);
-  const [fetchingData, setFetchingData] = useState(true);
-  const [editMode, setEditMode] = useState({});
-  const [editedData, setEditedData] = useState({});
-  const [editedDeliveryCharges, setEditedDeliveryCharges] = useState({});
-  const [editedMinOrders, setEditedMinOrders] = useState({});
-  const [newLocation, setNewLocation] = useState("");
-
-  // Function to toggle the dropdown for each vendor
-  const toggleDropdown = (vendorId) => {
-    setOpenVendorId(openVendorId === vendorId ? null : vendorId);
-  };
-
   // Function to parse date into a readable format
   const parseDate = (date) => {
     const d = new Date(date);
     return d.toString();
-  };
-
-  // Function to handle clicking the "Edit" button
-  const handleEditClick = (vendorId) => {
-    setEditMode((prevEditMode) => ({
-      ...prevEditMode,
-      [vendorId]: true,
-    }));
-    // Clone the vendor data for editing
-    setEditedData((prevEditedData) => ({
-      ...prevEditedData,
-      [vendorId]: {
-        ...vendorData.vendors.find((vendor) => vendor._id === vendorId),
-      },
-    }));
-    // Initialize the editedDeliveryCharges and editedMinOrders state
-    setEditedDeliveryCharges((prevCharges) => ({
-      ...prevCharges,
-      [vendorId]: {
-        ...vendorData.vendors.find((vendor) => vendor._id === vendorId)
-          .deliveryCharges,
-      },
-    }));
-    setEditedMinOrders((prevOrders) => ({
-      ...prevOrders,
-      [vendorId]: {
-        ...vendorData.vendors.find((vendor) => vendor._id === vendorId)
-          .minOrders,
-      },
-    }));
-  };
-
-  // Function to handle input changes in the edit mode
-  const handleInputChange = (vendorId, fieldName, value) => {
-    setEditedData((prevEditedData) => ({
-      ...prevEditedData,
-      [vendorId]: {
-        ...prevEditedData[vendorId],
-        [fieldName]: value,
-      },
-    }));
-  };
-
-  // Function to handle delivery charge changes in edit mode
-  const handleDeliveryChargeChange = (vendorId, location, value) => {
-    setEditedDeliveryCharges((prevCharges) => ({
-      ...prevCharges,
-      [vendorId]: {
-        ...prevCharges[vendorId],
-        [location]: value,
-      },
-    }));
-  };
-
-  // Function to handle minimum order value changes in edit mode
-  const handleMinOrderChange = (vendorId, location, value) => {
-    setEditedMinOrders((prevOrders) => ({
-      ...prevOrders,
-      [vendorId]: {
-        ...prevOrders[vendorId],
-        [location]: value,
-      },
-    }));
-  };
-
-  // Function to handle clicking the "Save" button
-  const handleSaveClick = async (vendorId) => {
-    // Save the edited data
-    const updatedVendor = editedData[vendorId];
-    const updatedDeliveryCharges = editedDeliveryCharges[vendorId];
-    const updatedMinOrders = editedMinOrders[vendorId];
-    updatedVendor.deliveryCharges = updatedDeliveryCharges;
-    updatedVendor.minOrders = updatedMinOrders;
-
-    // Update the state
-    setVendorData((prevData) => ({
-      ...prevData,
-      vendors: prevData.vendors.map((vendor) =>
-        vendor._id === vendorId ? updatedVendor : vendor
-      ),
-    }));
-    setEditMode((prevEditMode) => ({
-      ...prevEditMode,
-      [vendorId]: false,
-    }));
-
-    // Make an API call to update the vendor data
-    const { data } = await axios.post("/api/vendorDetails", {
-      updatedVendor,
-    });
-    toast.success(data.message);
   };
 
   // Function to handle adding a new delivery location
@@ -207,6 +102,155 @@ const VendorDetailsPage = () => {
     }));
   };
   // Use useEffect to fetch initial vendor data
+  useEffect(() => {
+    setFetchingData(true);
+    const fetchVendors = async () => {
+      const { data } = await axios.get("/api/vendorDetails");
+      setVendorData(data);
+      setFetchingData(false);
+    };
+    fetchVendors();
+  }, []);
+
+  const [vendorData, setVendorData] = useState([]);
+  const [openVendorId, setOpenVendorId] = useState(null);
+  const [fetchingData, setFetchingData] = useState(true);
+  const [editMode, setEditMode] = useState({});
+  const [editedData, setEditedData] = useState({});
+  const [editedDeliveryCharges, setEditedDeliveryCharges] = useState({});
+  const [editedMinOrders, setEditedMinOrders] = useState({});
+  const [newLocation, setNewLocation] = useState("");
+  const [editedDeliveryRequirements, setEditedDeliveryRequirements] = useState(
+    {}
+  );
+  const [editedPayPercentage, setEditedPayPercentage] = useState({});
+  const [editedWhatsappGroupId, setEditedWhatsappGroupId] = useState("");
+
+  const toggleDropdown = (vendorId) => {
+    setOpenVendorId(openVendorId === vendorId ? null : vendorId);
+  };
+
+  const handleEditClick = (vendorId) => {
+    setEditMode((prevEditMode) => ({
+      ...prevEditMode,
+      [vendorId]: true,
+    }));
+    setEditedData((prevEditedData) => ({
+      ...prevEditedData,
+      [vendorId]: {
+        ...vendorData.vendors.find((vendor) => vendor._id === vendorId),
+      },
+    }));
+    setEditedDeliveryCharges((prevCharges) => ({
+      ...prevCharges,
+      [vendorId]: {
+        ...vendorData.vendors.find((vendor) => vendor._id === vendorId)
+          .deliveryCharges,
+      },
+    }));
+    setEditedMinOrders((prevOrders) => ({
+      ...prevOrders,
+      [vendorId]: {
+        ...vendorData.vendors.find((vendor) => vendor._id === vendorId)
+          .minOrders,
+      },
+    }));
+    setEditedDeliveryRequirements((prevDeliveryRequirements) => ({
+      ...prevDeliveryRequirements,
+      [vendorId]: {
+        ...vendorData.vendors.find((vendor) => vendor._id === vendorId)
+          .deliveryRequirements,
+      },
+    }));
+    setEditedPayPercentage((prevPayPercentage) => ({
+      ...prevPayPercentage,
+      [vendorId]: vendorData.vendors.find((vendor) => vendor._id === vendorId)
+        .payPercentage,
+    }));
+    setEditedWhatsappGroupId(
+      vendorData.vendors.find((vendor) => vendor._id === vendorId)
+        .whatsapp_group_id
+    );
+  };
+
+  const handleInputChange = (vendorId, fieldName, value) => {
+    setEditedData((prevEditedData) => ({
+      ...prevEditedData,
+      [vendorId]: {
+        ...prevEditedData[vendorId],
+        [fieldName]: value,
+      },
+    }));
+  };
+
+  const handleDeliveryChargeChange = (vendorId, location, value) => {
+    setEditedDeliveryCharges((prevCharges) => ({
+      ...prevCharges,
+      [vendorId]: {
+        ...prevCharges[vendorId],
+        [location]: value,
+      },
+    }));
+  };
+
+  const handleMinOrderChange = (vendorId, location, value) => {
+    setEditedMinOrders((prevOrders) => ({
+      ...prevOrders,
+      [vendorId]: {
+        ...prevOrders[vendorId],
+        [location]: value,
+      },
+    }));
+  };
+
+  const handleDeliveryRequirementChange = (vendorId, location, value) => {
+    setEditedDeliveryRequirements((prevDeliveryRequirements) => ({
+      ...prevDeliveryRequirements,
+      [vendorId]: {
+        ...prevDeliveryRequirements[vendorId],
+        [location]: value,
+      },
+    }));
+  };
+
+  const handlePayPercentageChange = (vendorId, value) => {
+    setEditedPayPercentage((prevPayPercentage) => ({
+      ...prevPayPercentage,
+      [vendorId]: value,
+    }));
+  };
+
+  const handleWhatsappGroupIdChange = (value) => {
+    setEditedWhatsappGroupId(value);
+  };
+
+  const handleSaveClick = async (vendorId) => {
+    const updatedVendor = editedData[vendorId];
+    const updatedDeliveryCharges = editedDeliveryCharges[vendorId];
+    const updatedMinOrders = editedMinOrders[vendorId];
+    updatedVendor.deliveryCharges = updatedDeliveryCharges;
+    updatedVendor.minOrders = updatedMinOrders;
+    updatedVendor.deliveryRequirements = editedDeliveryRequirements[vendorId];
+    updatedVendor.payPercentage = editedPayPercentage[vendorId];
+    updatedVendor.whatsapp_group_id = editedWhatsappGroupId;
+
+    setVendorData((prevData) => ({
+      ...prevData,
+      vendors: prevData.vendors.map((vendor) =>
+        vendor._id === vendorId ? updatedVendor : vendor
+      ),
+    }));
+    setEditMode((prevEditMode) => ({
+      ...prevEditMode,
+      [vendorId]: false,
+    }));
+
+    const { data } = await axios.post("/api/vendorDetails", {
+      updatedVendor,
+    });
+    toast.success(data.message);
+  };
+
   useEffect(() => {
     setFetchingData(true);
     const fetchVendors = async () => {
@@ -706,6 +750,120 @@ const VendorDetailsPage = () => {
                           <p>No menu items available</p>
                         )}
                       </>
+                    )}
+                  </div>
+                  <br />
+                  <div>
+                    <b>Delivery Requirements:</b>
+                    {editMode[vendor._id] ? (
+                      <div>
+                        {Object.entries(
+                          editedDeliveryRequirements[vendor._id]
+                        ).map(([location, requirement]) => (
+                          <div
+                            key={location}
+                            className="flex flex-col gap-2 my-2 border border-gray-300 p-2 rounded-lg"
+                          >
+                            <div className="text-md font-bold">{location}:</div>
+                            <div className="flex gap-2 items-center">
+                              <span>Charge: </span>
+                              <Input
+                                type="number"
+                                value={requirement.charge}
+                                onChange={(e) =>
+                                  handleDeliveryRequirementChange(
+                                    vendor._id,
+                                    location,
+                                    { ...requirement, charge: e.target.value }
+                                  )
+                                }
+                              />
+                            </div>
+                            <div className="flex gap-2 items-center">
+                              <span>Min Order: </span>
+                              <Input
+                                type="number"
+                                value={requirement.minOrder}
+                                onChange={(e) =>
+                                  handleDeliveryRequirementChange(
+                                    vendor._id,
+                                    location,
+                                    { ...requirement, minOrder: e.target.value }
+                                  )
+                                }
+                              />
+                            </div>
+                            <div className="flex gap-2 items-center">
+                              <span>Max Order: </span>
+                              <Input
+                                type="number"
+                                value={requirement.maxOrder}
+                                onChange={(e) =>
+                                  handleDeliveryRequirementChange(
+                                    vendor._id,
+                                    location,
+                                    { ...requirement, maxOrder: e.target.value }
+                                  )
+                                }
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div>
+                        {Object.entries(vendor.deliveryRequirements).map(
+                          ([location, requirement]) => (
+                            <div
+                              key={location}
+                              className="flex flex-col gap-2 my-2 border border-gray-300 p-2 rounded-lg"
+                            >
+                              <div className="text-md font-bold">
+                                {location}:
+                              </div>
+                              <div className="flex gap-2 items-center">
+                                <span>Charge:{requirement.charge} </span>
+                              </div>
+                              <div className="flex gap-2 items-center">
+                                <span>Min Order:{requirement.minOrder} </span>
+                              </div>
+                              <div className="flex gap-2 items-center">
+                                <span>Max Order:{requirement.maxOrder} </span>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <b>Pay Percentage:</b>
+                    {editMode[vendor._id] ? (
+                      <Input
+                        type="number"
+                        value={editedPayPercentage[vendor._id]}
+                        onChange={(e) =>
+                          handlePayPercentageChange(vendor._id, e.target.value)
+                        }
+                      />
+                    ) : (
+                      <div>{vendor.payPercentage}</div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <b>WhatsApp Group ID:</b>
+                    {editMode[vendor._id] ? (
+                      <Input
+                        type="text"
+                        value={editedWhatsappGroupId}
+                        onChange={(e) =>
+                          handleWhatsappGroupIdChange(e.target.value)
+                        }
+                      />
+                    ) : (
+                      <div>{vendor.whatsapp_group_id}</div>
                     )}
                   </div>
                 </div>
