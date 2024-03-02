@@ -8,6 +8,7 @@ const VendorSchema = new mongoose.Schema(
     password: { type: String, required: true },
     category: { type: String },
     imageURI: { type: String },
+    whatsapp_group_id: { type: String },
     deliveryLocations: { type: Array, required: true },
     deliveryCharges: { type: Object },
     packingHandlingCharges: { type: String },

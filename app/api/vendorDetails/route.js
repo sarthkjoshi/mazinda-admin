@@ -67,6 +67,9 @@ export async function POST(req) {
       vendor.deliveryCharges = updatedVendor.deliveryCharges;
       vendor.minOrders = updatedVendor.minOrders;
       vendor.menu = updatedVendor.menu;
+      vendor.payPercentage = updatedVendor.payPercentage;
+      vendor.whatsapp_group_id = updatedVendor.whatsapp_group_id;
+      vendor.deliveryRequirements = updatedVendor.deliveryRequirements;
       await vendor.save();
       return NextResponse.json({
         success: true,
