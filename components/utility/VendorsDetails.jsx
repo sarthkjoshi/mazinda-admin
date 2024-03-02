@@ -154,6 +154,58 @@ const VendorDetailsPage = () => {
     }));
   };
 
+  // Function to handle input changes in the edit mode for menu items
+  const handleMenuItemChange = (vendorId, category, index, field, value) => {
+    setEditedData((prevEditedData) => ({
+      ...prevEditedData,
+      [vendorId]: {
+        ...prevEditedData[vendorId],
+        menu: {
+          ...prevEditedData[vendorId].menu,
+          [category]: prevEditedData[vendorId].menu[category].map((item, idx) =>
+            idx === index ? { ...item, [field]: value } : item
+          ),
+        },
+      },
+    }));
+  };
+  const handleRemoveMenuItem = (vendorId, category, indexToRemove) => {
+    setEditedData((prevEditedData) => ({
+      ...prevEditedData,
+      [vendorId]: {
+        ...prevEditedData[vendorId],
+        menu: {
+          ...prevEditedData[vendorId].menu,
+          [category]: prevEditedData[vendorId].menu[category].filter(
+            (_, index) => index !== indexToRemove
+          ),
+        },
+      },
+    }));
+  };
+
+  // Function to handle adding a new menu item
+  const handleAddMenuItem = (vendorId, category) => {
+    setEditedData((prevEditedData) => ({
+      ...prevEditedData,
+      [vendorId]: {
+        ...prevEditedData[vendorId],
+        menu: {
+          ...prevEditedData[vendorId].menu,
+          [category]: [
+            ...(prevEditedData[vendorId].menu[category] || []),
+            {
+              name: "",
+              price: "",
+              categoryType: "",
+              availability: "",
+              imageName: "",
+            },
+          ],
+        },
+      },
+    }));
+  };
   // Use useEffect to fetch initial vendor data
   useEffect(() => {
     setFetchingData(true);
@@ -228,11 +280,9 @@ const VendorDetailsPage = () => {
                 <div className="px-2 flex flex-col gap-3">
                   <div className="flex items-center gap-2">
                     <strong>Vendor ID: </strong>
-
                     {vendor._id}
                   </div>
                   <br />
-
                   <div className="flex items-center gap-2">
                     <b>Name </b>{" "}
                     {editMode[vendor._id] ? (
@@ -247,7 +297,6 @@ const VendorDetailsPage = () => {
                       <>{vendor.name}</>
                     )}
                   </div>
-
                   <div className="flex items-center gap-2">
                     <b>Number </b>{" "}
                     {editMode[vendor._id] ? (
@@ -330,7 +379,6 @@ const VendorDetailsPage = () => {
                     )}
                   </div>
                   <br />
-
                   <div>
                     <b>Delivery Locations:</b>{" "}
                     {editMode[vendor._id] ? (
@@ -502,6 +550,162 @@ const VendorDetailsPage = () => {
                       />
                     ) : (
                       <>{vendor.serviceCharges}</>
+                    )}
+                  </div>
+                  <br />
+                  <div className="gap-2">
+                    <b className="text-lg">Menu:</b>{" "}
+                    {editMode[vendor._id] &&
+                    Object.keys(editedData[vendor._id].menu).length > 0 ? (
+                      <>
+                        {Object.entries(editedData[vendor._id].menu).map(
+                          ([category, items]) => (
+                            <div key={category} className="mt-4">
+                              <h3 className="font-bold">{category}:</h3>
+                              {items.map((item, index) => (
+                                <div
+                                  key={index}
+                                  className=" rounded-lg border border-gray-300 mb-2 p-3"
+                                >
+                                  <div className="flex gap-1 items-center mb-1">
+                                    <p>Name:</p>
+                                    <Input
+                                      type="text"
+                                      value={item.name}
+                                      onChange={(e) =>
+                                        handleMenuItemChange(
+                                          vendor._id,
+                                          category,
+                                          index,
+                                          "name",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="Name"
+                                    />
+                                  </div>
+                                  <div className="flex gap-1 items-center mb-1">
+                                    <p>Price:</p>
+                                    <Input
+                                      type="number"
+                                      value={item.price}
+                                      onChange={(e) =>
+                                        handleMenuItemChange(
+                                          vendor._id,
+                                          category,
+                                          index,
+                                          "price",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="Price"
+                                    />
+                                  </div>
+                                  <div className="flex gap-1 items-center mb-1">
+                                    <p>Category Type:</p>
+                                    <Input
+                                      type="text"
+                                      value={item.categoryType}
+                                      onChange={(e) =>
+                                        handleMenuItemChange(
+                                          vendor._id,
+                                          category,
+                                          index,
+                                          "categoryType",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="Category Type"
+                                    />
+                                  </div>
+                                  <div className="flex gap-1 items-center mb-1">
+                                    <p>Availability:</p>
+                                    <Input
+                                      type="text"
+                                      value={item.availability}
+                                      onChange={(e) =>
+                                        handleMenuItemChange(
+                                          vendor._id,
+                                          category,
+                                          index,
+                                          "availability",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="Availability"
+                                    />
+                                  </div>
+                                  <div className="flex gap-1 items-center mb-1">
+                                    <p>Image:</p>
+                                    <Input
+                                      type="text"
+                                      value={item.imageName}
+                                      onChange={(e) =>
+                                        handleMenuItemChange(
+                                          vendor._id,
+                                          category,
+                                          index,
+                                          "imageName",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="Image Name"
+                                    />
+                                  </div>
+                                  <button
+                                    className="text-red-500 hover:text-red-700"
+                                    onClick={() =>
+                                      handleRemoveMenuItem(
+                                        vendor._id,
+                                        category,
+                                        index
+                                      )
+                                    }
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              ))}
+                              <button
+                                className="text-green-500 hover:text-green-700"
+                                onClick={() =>
+                                  handleAddMenuItem(vendor._id, category)
+                                }
+                              >
+                                Add Item
+                              </button>
+                            </div>
+                          )
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {Object.keys(vendor.menu).length > 0 ? (
+                          <>
+                            {Object.entries(vendor.menu).map(
+                              ([category, items]) => (
+                                <div key={category} className="mt-4">
+                                  <h3 className="font-bold">{category}:</h3>
+                                  {items.map((item, index) => (
+                                    <div
+                                      key={index}
+                                      className="rounded-lg border border-gray-300 mb-2 p-3"
+                                    >
+                                      <p>Name: {item.name}</p>
+                                      <p>Price: {item.price}</p>
+                                      <p>Category Type: {item.categoryType}</p>
+                                      <p>Availability: {item.availability}</p>
+                                      <p>Image: {item.imageName}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )
+                            )}
+                          </>
+                        ) : (
+                          <p>No menu items available</p>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

@@ -7,6 +7,7 @@ export async function GET() {
     await connectDB();
 
     const vendors = await Vendor.find();
+
     return NextResponse.json({ success: true, vendors });
   } catch (error) {
     return NextResponse.json({
@@ -65,7 +66,7 @@ export async function POST(req) {
       vendor.deliveryLocations = updatedVendor.deliveryLocations;
       vendor.deliveryCharges = updatedVendor.deliveryCharges;
       vendor.minOrders = updatedVendor.minOrders;
-
+      vendor.menu = updatedVendor.menu;
       await vendor.save();
       return NextResponse.json({
         success: true,
