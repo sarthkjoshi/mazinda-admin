@@ -71,13 +71,13 @@ export async function PUT(req) {
     });
     console.log(groupid);
     // REPLACE group_id with groupid
-    // const response = await axios.post(
-    //   `https://wapp.powerstext.in/api/send_group?group_id=120363193471121815@g.us&type=text&message=${message}&instance_id=6534CC8282DA7&access_token=65338e1dbc831`
-    // );
+    const response = await axios.post(
+      `https://wapp.powerstext.in/api/send_group?group_id=${groupid}&type=text&message=${message}&instance_id=6534CC8282DA7&access_token=65338e1dbc831`
+    );
 
-    // if (response.data.status === "success") {
-    //   console.log("message dilevered");
-    // }
+    if (response.data.status === "success") {
+      console.log("message dilevered");
+    }
 
     return res;
   } catch (error) {
