@@ -1,20 +1,14 @@
-'use client'
+import Overview from "@/components/dashboard/Overview";
+import OrdersTabs from "@/components/utility/OrderTabs";
 
-import OvalLoader from "@/components/utility/OvalLoader";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
-const Admin = () => {
-  const router = useRouter();
-  useEffect(() => {
-    router.push("/dashboard");
-  }, []);
-
+const Home = () => {
   return (
-    <div className="flex items-center justify-center h-screen w-screen">
-      <OvalLoader />
-    </div>
+    <>
+      <h1 className="font-semibold text-3xl my-2">Mazinda : Admin Dashboard</h1>
+      <Overview />
+      <OrdersTabs />
+    </>
   );
 };
 
-export default Admin;
+export default Home;

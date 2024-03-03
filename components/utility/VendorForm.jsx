@@ -163,7 +163,7 @@ const VendorForm = () => {
 
   return (
     <>
-      <div className="p-4 max-w-md mx-auto bg-white mt-4">
+      <div className="p-4 w-1/3 bg-white mt-4">
         <h2 className="text-2xl font-semibold mb-4">Add Vendor</h2>
 
         <form onSubmit={handleSubmit}>

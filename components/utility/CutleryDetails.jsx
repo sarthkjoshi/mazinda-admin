@@ -56,7 +56,7 @@ const CutleryDetails = () => {
   };
 
   return (
-    <div className="flex justify-center items-center flex-col">
+    <div className="flex justify-center flex-col bg-white w-fit p-4 rounded-lg">
       <h1 className="text-2xl font-semibold mb-5 text-center">
         Cutlery Details
       </h1>
@@ -91,12 +91,16 @@ const CutleryDetails = () => {
             </div>
           </div>
 
-          <Button type="submit" className="mr-5">
-            Save
-          </Button>
-          <Button type="button" onClick={handleEditModeToggle}>
-            Cancel
-          </Button>
+          <div className="flex gap-2">
+            <Button type="submit">Save</Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleEditModeToggle}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       ) : (
         <div className="flex flex-col gap-2">

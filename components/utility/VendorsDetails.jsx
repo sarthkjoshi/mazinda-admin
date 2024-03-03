@@ -261,7 +261,7 @@ const VendorDetailsPage = () => {
   }, []);
 
   return (
-    <div className="container mx-auto p-4 md:w-1/3">
+    <div className="p-4 md:w-1/2 bg-white">
       <h1 className="text-2xl font-semibold mb-5 text-center">
         Vendor Details
       </h1>
