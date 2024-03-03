@@ -96,7 +96,7 @@ const OrdersTabs = ({ filter }) => {
         </div>
 
         <div
-          className={`rounded-lg bg-gray-50 dark:bg-gray-800 ${
+          className={`rounded-lg bg-gray-50 ${
             activeTab === "vendors" ? "block" : "hidden"
           }`}
           id="vendors"

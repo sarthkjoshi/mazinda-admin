@@ -120,10 +120,6 @@ const VendorDetailsPage = () => {
   const [editedPayPercentage, setEditedPayPercentage] = useState({});
   const [editedWhatsappGroupId, setEditedWhatsappGroupId] = useState("");
 
-  const toggleDropdown = (vendorId) => {
-    setOpenVendorId(openVendorId === vendorId ? null : vendorId);
-  };
-
   const handleEditClick = (vendorId) => {
     setEditMode((prevEditMode) => ({
       ...prevEditMode,
@@ -256,7 +252,7 @@ const VendorDetailsPage = () => {
   }, []);
 
   return (
-    <div className="container mx-auto p-4 md:w-1/2 bg-white rounded-lg">
+    <div className="p-4 md:w-1/2 bg-white rounded-lg">
       <h1 className="text-2xl font-semibold mb-5 text-center">
         Vendor Details
       </h1>
