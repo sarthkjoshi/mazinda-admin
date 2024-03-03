@@ -15,6 +15,12 @@ import {
 import OvalLoader from "./OvalLoader";
 
 const VendorDetailsPage = () => {
+  // Function to parse date into a readable format
+  const parseDate = (date) => {
+    const d = new Date(date);
+    return d.toString();
+  };
+
   // Function to handle adding a new delivery location
   const handleAddLocation = (vendorId, newLocation) => {
     setEditedData((prevEditedData) => ({
@@ -119,6 +125,7 @@ const VendorDetailsPage = () => {
   );
   const [editedPayPercentage, setEditedPayPercentage] = useState({});
   const [editedWhatsappGroupId, setEditedWhatsappGroupId] = useState("");
+  const [editedPriority, setEditedPriority] = useState("");
 
   const toggleDropdown = (vendorId) => {
     setOpenVendorId(openVendorId === vendorId ? null : vendorId);
@@ -217,7 +224,9 @@ const VendorDetailsPage = () => {
   const handleWhatsappGroupIdChange = (value) => {
     setEditedWhatsappGroupId(value);
   };
-
+  const handlePriorityChange = (value) => {
+    setEditedPriority(value);
+  };
   const handleSaveClick = async (vendorId) => {
     const updatedVendor = editedData[vendorId];
     const updatedDeliveryCharges = editedDeliveryCharges[vendorId];
@@ -227,7 +236,7 @@ const VendorDetailsPage = () => {
     updatedVendor.deliveryRequirements = editedDeliveryRequirements[vendorId];
     updatedVendor.payPercentage = editedPayPercentage[vendorId];
     updatedVendor.whatsapp_group_id = editedWhatsappGroupId;
-
+    updatedVendor.priority = editedPriority;
     setVendorData((prevData) => ({
       ...prevData,
       vendors: prevData.vendors.map((vendor) =>
@@ -256,7 +265,7 @@ const VendorDetailsPage = () => {
   }, []);
 
   return (
-    <div className="container mx-auto p-4 md:w-1/2 bg-white rounded-lg">
+    <div className="container mx-auto p-4 md:w-1/3">
       <h1 className="text-2xl font-semibold mb-5 text-center">
         Vendor Details
       </h1>
@@ -436,7 +445,6 @@ const VendorDetailsPage = () => {
                                 }
                               />
                               <Button
-                                className="bg-red-500"
                                 onClick={() =>
                                   handleRemoveLocation(vendor._id, index)
                                 }
@@ -454,7 +462,6 @@ const VendorDetailsPage = () => {
                             onChange={(e) => setNewLocation(e.target.value)}
                           />
                           <Button
-                            variant="secondary"
                             onClick={() =>
                               handleAddLocation(vendor._id, newLocation)
                             }
@@ -467,7 +474,7 @@ const VendorDetailsPage = () => {
                       <>{vendor.deliveryLocations.join(", ")}</>
                     )}
                   </div>
-                  <hr />
+                  <br />
                   <div>
                     <b>Delivery Charges (For deliveries done by vendor):</b>{" "}
                     {editMode[vendor._id] ? (
@@ -553,8 +560,8 @@ const VendorDetailsPage = () => {
                       </>
                     )}
                   </div>
-                  <hr />
-                  <div className="flex items-center gap-2">
+                  <br />
+                  <div className="flex items-center gap-2 justify-between">
                     <b>Packing Handling Charges:</b>{" "}
                     {editMode[vendor._id] ? (
                       <Input
@@ -573,7 +580,8 @@ const VendorDetailsPage = () => {
                       <>{vendor.packingHandlingCharges}</>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <br />
+                  <div className="flex items-center gap-2 justify-between">
                     <b>Service Charges:</b>{" "}
                     {editMode[vendor._id] ? (
                       <Input
@@ -592,7 +600,7 @@ const VendorDetailsPage = () => {
                       <>{vendor.serviceCharges}</>
                     )}
                   </div>
-
+                  <br />
                   <div className="flex gap-2">
                     <b>Pay Percentage:</b>
                     {editMode[vendor._id] ? (
@@ -607,7 +615,7 @@ const VendorDetailsPage = () => {
                       <div>{vendor.payPercentage}</div>
                     )}
                   </div>
-
+                  <br />
                   <div className="flex gap-2">
                     <b>WhatsApp Group ID:</b>
                     {editMode[vendor._id] ? (
@@ -622,91 +630,19 @@ const VendorDetailsPage = () => {
                       <div>{vendor.whatsapp_group_id}</div>
                     )}
                   </div>
-                  <hr />
-                  <div>
-                    <b>External Delivery Requirements:</b>
+                  <br />
+                  <div className="flex gap-2">
+                    <b>Priority:</b>
                     {editMode[vendor._id] ? (
-                      <div>
-                        {Object.entries(
-                          editedDeliveryRequirements[vendor._id]
-                        ).map(([location, requirement]) => (
-                          <div
-                            key={location}
-                            className="flex flex-col gap-2 my-2 border border-gray-300 p-2 rounded-lg"
-                          >
-                            <div className="text-md font-bold">{location}:</div>
-                            <div className="flex gap-2 items-center">
-                              <span>Charge: </span>
-                              <Input
-                                type="number"
-                                value={requirement.charge}
-                                onChange={(e) =>
-                                  handleDeliveryRequirementChange(
-                                    vendor._id,
-                                    location,
-                                    { ...requirement, charge: e.target.value }
-                                  )
-                                }
-                              />
-                            </div>
-                            <div className="flex gap-2 items-center">
-                              <span>Min Order: </span>
-                              <Input
-                                type="number"
-                                value={requirement.minOrder}
-                                onChange={(e) =>
-                                  handleDeliveryRequirementChange(
-                                    vendor._id,
-                                    location,
-                                    { ...requirement, minOrder: e.target.value }
-                                  )
-                                }
-                              />
-                            </div>
-                            <div className="flex gap-2 items-center">
-                              <span>Max Order: </span>
-                              <Input
-                                type="number"
-                                value={requirement.maxOrder}
-                                onChange={(e) =>
-                                  handleDeliveryRequirementChange(
-                                    vendor._id,
-                                    location,
-                                    { ...requirement, maxOrder: e.target.value }
-                                  )
-                                }
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      <Input
+                        type="text"
+                        value={editedPriority}
+                        onChange={(e) => handlePriorityChange(e.target.value)}
+                      />
                     ) : (
-                      <div>
-                        {Object.entries(vendor.deliveryRequirements).map(
-                          ([location, requirement]) => (
-                            <div
-                              key={location}
-                              className="flex flex-col gap-2 my-2 border border-gray-300 p-2 rounded-lg"
-                            >
-                              <div className="text-md font-bold">
-                                {location}:
-                              </div>
-                              <div className="flex gap-2 items-center">
-                                <span>Charge:{requirement.charge} </span>
-                              </div>
-                              <div className="flex gap-2 items-center">
-                                <span>Min Order:{requirement.minOrder} </span>
-                              </div>
-                              <div className="flex gap-2 items-center">
-                                <span>Max Order:{requirement.maxOrder} </span>
-                              </div>
-                            </div>
-                          )
-                        )}
-                      </div>
+                      <div>{vendor.priority}</div>
                     )}
                   </div>
-
                   <div className="gap-2">
                     <b className="text-lg">Menu:</b>{" "}
                     {editMode[vendor._id] &&
@@ -860,6 +796,90 @@ const VendorDetailsPage = () => {
                           <p>No menu items available</p>
                         )}
                       </>
+                    )}
+                  </div>
+                  <br />
+                  <div>
+                    <b>Delivery Requirements:</b>
+                    {editMode[vendor._id] ? (
+                      <div>
+                        {Object.entries(
+                          editedDeliveryRequirements[vendor._id]
+                        ).map(([location, requirement]) => (
+                          <div
+                            key={location}
+                            className="flex flex-col gap-2 my-2 border border-gray-300 p-2 rounded-lg"
+                          >
+                            <div className="text-md font-bold">{location}:</div>
+                            <div className="flex gap-2 items-center">
+                              <span>Charge: </span>
+                              <Input
+                                type="number"
+                                value={requirement.charge}
+                                onChange={(e) =>
+                                  handleDeliveryRequirementChange(
+                                    vendor._id,
+                                    location,
+                                    { ...requirement, charge: e.target.value }
+                                  )
+                                }
+                              />
+                            </div>
+                            <div className="flex gap-2 items-center">
+                              <span>Min Order: </span>
+                              <Input
+                                type="number"
+                                value={requirement.minOrder}
+                                onChange={(e) =>
+                                  handleDeliveryRequirementChange(
+                                    vendor._id,
+                                    location,
+                                    { ...requirement, minOrder: e.target.value }
+                                  )
+                                }
+                              />
+                            </div>
+                            <div className="flex gap-2 items-center">
+                              <span>Max Order: </span>
+                              <Input
+                                type="number"
+                                value={requirement.maxOrder}
+                                onChange={(e) =>
+                                  handleDeliveryRequirementChange(
+                                    vendor._id,
+                                    location,
+                                    { ...requirement, maxOrder: e.target.value }
+                                  )
+                                }
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div>
+                        {Object.entries(vendor.deliveryRequirements).map(
+                          ([location, requirement]) => (
+                            <div
+                              key={location}
+                              className="flex flex-col gap-2 my-2 border border-gray-300 p-2 rounded-lg"
+                            >
+                              <div className="text-md font-bold">
+                                {location}:
+                              </div>
+                              <div className="flex gap-2 items-center">
+                                <span>Charge:{requirement.charge} </span>
+                              </div>
+                              <div className="flex gap-2 items-center">
+                                <span>Min Order:{requirement.minOrder} </span>
+                              </div>
+                              <div className="flex gap-2 items-center">
+                                <span>Max Order:{requirement.maxOrder} </span>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
