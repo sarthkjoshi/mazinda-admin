@@ -5,6 +5,7 @@ import FoodOrdersList from "@/components/utility/FoodOrderList";
 import VendorDetailsPage from "./VendorsDetails";
 import VendorForm from "./VendorForm";
 import MoneyManagement from "./Moneymanagement";
+import CutleryDetails from "./CutleryDetails";
 
 const FoodManagementTab = ({ filter }) => {
   const [activeTab, setActiveTab] = useState("foodorders");
@@ -90,6 +91,23 @@ const FoodManagementTab = ({ filter }) => {
               Money Management
             </button>
           </li>
+          <li className="me-2" role="presentation">
+            <button
+              className={`inline-block p-4 border-b-2 rounded-t-lg ${
+                activeTab === "cutlerydetails"
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+              }`}
+              id="cutlerydetails-tab"
+              type="button"
+              role="tab"
+              aria-controls="cutlerydetails"
+              aria-selected={activeTab === "cutlerydetails"}
+              onClick={() => handleTabClick("cutlerydetails")}
+            >
+              Cutlery Details
+            </button>
+          </li>
         </ul>
       </div>
       <div id="default-tab-content">
@@ -132,6 +150,16 @@ const FoodManagementTab = ({ filter }) => {
           aria-labelledby="moneymanagement-tab"
         >
           <MoneyManagement />
+        </div>
+        <div
+          className={`rounded-lg bg-gray-50 dark:bg-gray-800 ${
+            activeTab === "cutlerydetails" ? "block" : "hidden"
+          }`}
+          id="cutlerydetails"
+          role="tabpanel"
+          aria-labelledby="cutlerydetails-tab"
+        >
+          <CutleryDetails />
         </div>
       </div>
     </>
