@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import FoodOrdersList from "@/components/utility/FoodOrderList";
 import VendorDetailsPage from "./VendorsDetails";
 import VendorForm from "./VendorForm";
-import MoneyManagement from "./Moneymanagement";
+import MoneyManagement from "./MoneyManagement";
 import CutleryDetails from "./CutleryDetails";
 
 const FoodManagementTab = ({ filter }) => {
