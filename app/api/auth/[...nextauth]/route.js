@@ -49,14 +49,12 @@ const handler = NextAuth({
     maxAge: 60 * 60,
   },
   callbacks: {
-    async session({ session, token }) {
+    async session(session, token) {
       session.user = token.user;
       return session;
     },
-    async jwt({ token, user }) {
-      if (user) {
-        token.user = user;
-      }
+    async jwt(token, user) {
+      if (user) token.user = user;
       return token;
     },
   },
