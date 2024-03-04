@@ -26,10 +26,15 @@ const handler = NextAuth({
         //   password: credentials.password,
         // });
 
-        const user = await User.findOne({
-          phoneNumber: credentials.phone_number,
-          password: credentials.password,
-        });
+        let user;
+        try {
+          user = await User.findOne({
+            phoneNumber: credentials.phone_number,
+            password: credentials.password,
+          });
+        } catch (err) {
+          console.log("Error fetching the user", err);
+        }
 
         if (user) {
           console.log(user);
