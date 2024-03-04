@@ -143,7 +143,7 @@ const VendorForm = () => {
       minOrders: updatedMinOrders,
     }));
 
-    const response = await axios.post("/api/add-vendor", {
+    const response = await axios.post("/api/food/vendor/add", {
       vendorData: {
         ...vendorData,
         deliveryLocations: updatedDeliveryLocations,

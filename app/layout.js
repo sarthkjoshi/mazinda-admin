@@ -6,8 +6,8 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { Slide } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import NextTopLoader from "nextjs-toploader";
 
