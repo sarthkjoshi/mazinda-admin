@@ -232,9 +232,9 @@ const MyOrdersPage = () => {
       <div className="flex gap-2 mb-2">
         <button
           onClick={downloadCSV}
-          className="bg-black hover:opacity-75 text-white py-2 px-4 rounded"
+          className="bg-black hover:opacity-75 text-white py-2 px-4 rounded text-sm"
         >
-          Export Orders Data
+          Export CSV
         </button>
         <button
           onClick={handleAllDeliveredClick}
@@ -265,7 +265,7 @@ const MyOrdersPage = () => {
             {orders.map((order) => (
               <div
                 key={order._id}
-                className="bg-white shadow border rounded-lg mb-6 px-4 pt-4 pb-1 cursor-pointer w-1/2"
+                className="bg-white shadow border rounded-lg mb-6 px-4 pt-4 pb-1 cursor-pointer md:w-1/2"
                 onClick={() => toggleExpand(order._id)}
               >
                 <div className="flex flex-col gap-1">

@@ -639,7 +639,7 @@ const VendorDetailsPage = () => {
                       <div>{vendor.priority}</div>
                     )}
                   </div>
-                  <div className="gap-2">
+                  {/* <div className="gap-2">
                     <b className="text-lg">Menu:</b>{" "}
                     {editMode[vendor._id] &&
                     Object.keys(editedData[vendor._id].menu).length > 0 ? (
@@ -793,7 +793,7 @@ const VendorDetailsPage = () => {
                         )}
                       </>
                     )}
-                  </div>
+                  </div> */}
                   <br />
                   <div>
                     <b>Delivery Requirements:</b>
