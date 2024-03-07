@@ -45,7 +45,7 @@ export default function RootLayout({ children }) {
             theme="light"
           />
           <div className="flex items-center ">
-            <div className="md:hidden">
+            <div className="md:hidden ml-3">
               <MobileSidebar />
             </div>
             <div className="hidden md:block">
