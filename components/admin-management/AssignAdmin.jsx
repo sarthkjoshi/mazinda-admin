@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
@@ -69,6 +69,8 @@ const AssignAdmin = () => {
         password: formData.password,
         allowedPaths,
       });
+
+      console.log(data);
       if (data.success) {
         toast.success(data.message);
       } else {
