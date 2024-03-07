@@ -1,12 +1,12 @@
 import React from "react";
 import CutleryDetails from "./CutleryDetails";
-import Alert from "./Alert";
+import AlertDetails from "./AlertDetails";
 
 export default function FoodDetails() {
   return (
     <div className="flex flex-col gap-3">
       <CutleryDetails />
-      <Alert />
+      <AlertDetails />
     </div>
   );
 }

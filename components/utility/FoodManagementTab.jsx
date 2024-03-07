@@ -106,7 +106,7 @@ const FoodManagementTab = ({ filter }) => {
               aria-selected={activeTab === "cutlerydetails"}
               onClick={() => handleTabClick("cutlerydetails")}
             >
-              Food Details
+              Additional Details
             </button>
           </li>
         </ul>

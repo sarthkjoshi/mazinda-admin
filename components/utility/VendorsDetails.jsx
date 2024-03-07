@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -36,12 +36,15 @@ const VendorDetailsPage = () => {
   };
   const handleToggleDisableShop = async (number) => {
     try {
-      const response = await axios.put("/api/vendorDetails/toggledisableshop", {
-        number,
-      });
-      console.log("sarthak", response.data);
-      if (response.data.success) {
-        toast.success(response.data.message, { autoClose: 3000 });
+      const { data } = await axios.put(
+        "/api/vendorDetails/toggle-disable-shop",
+        {
+          number,
+        }
+      );
+      console.log(data);
+      if (data.success) {
+        toast.success(data.message, { autoClose: 3000 });
       }
     } catch (err) {
       console.log("An error occurred: " + err.message);
@@ -76,57 +79,58 @@ const VendorDetailsPage = () => {
   };
 
   // Function to handle input changes in the edit mode for menu items
-  const handleMenuItemChange = (vendorId, category, index, field, value) => {
-    setEditedData((prevEditedData) => ({
-      ...prevEditedData,
-      [vendorId]: {
-        ...prevEditedData[vendorId],
-        menu: {
-          ...prevEditedData[vendorId].menu,
-          [category]: prevEditedData[vendorId].menu[category].map((item, idx) =>
-            idx === index ? { ...item, [field]: value } : item
-          ),
-        },
-      },
-    }));
-  };
-  const handleRemoveMenuItem = (vendorId, category, indexToRemove) => {
-    setEditedData((prevEditedData) => ({
-      ...prevEditedData,
-      [vendorId]: {
-        ...prevEditedData[vendorId],
-        menu: {
-          ...prevEditedData[vendorId].menu,
-          [category]: prevEditedData[vendorId].menu[category].filter(
-            (_, index) => index !== indexToRemove
-          ),
-        },
-      },
-    }));
-  };
+  // const handleMenuItemChange = (vendorId, category, index, field, value) => {
+  //   setEditedData((prevEditedData) => ({
+  //     ...prevEditedData,
+  //     [vendorId]: {
+  //       ...prevEditedData[vendorId],
+  //       menu: {
+  //         ...prevEditedData[vendorId].menu,
+  //         [category]: prevEditedData[vendorId].menu[category].map((item, idx) =>
+  //           idx === index ? { ...item, [field]: value } : item
+  //         ),
+  //       },
+  //     },
+  //   }));
+  // };
+  // const handleRemoveMenuItem = (vendorId, category, indexToRemove) => {
+  //   setEditedData((prevEditedData) => ({
+  //     ...prevEditedData,
+  //     [vendorId]: {
+  //       ...prevEditedData[vendorId],
+  //       menu: {
+  //         ...prevEditedData[vendorId].menu,
+  //         [category]: prevEditedData[vendorId].menu[category].filter(
+  //           (_, index) => index !== indexToRemove
+  //         ),
+  //       },
+  //     },
+  //   }));
+  // };
 
-  // Function to handle adding a new menu item
-  const handleAddMenuItem = (vendorId, category) => {
-    setEditedData((prevEditedData) => ({
-      ...prevEditedData,
-      [vendorId]: {
-        ...prevEditedData[vendorId],
-        menu: {
-          ...prevEditedData[vendorId].menu,
-          [category]: [
-            ...(prevEditedData[vendorId].menu[category] || []),
-            {
-              name: "",
-              price: "",
-              categoryType: "",
-              availability: "",
-              imageName: "",
-            },
-          ],
-        },
-      },
-    }));
-  };
+  // // Function to handle adding a new menu item
+  // const handleAddMenuItem = (vendorId, category) => {
+  //   setEditedData((prevEditedData) => ({
+  //     ...prevEditedData,
+  //     [vendorId]: {
+  //       ...prevEditedData[vendorId],
+  //       menu: {
+  //         ...prevEditedData[vendorId].menu,
+  //         [category]: [
+  //           ...(prevEditedData[vendorId].menu[category] || []),
+  //           {
+  //             name: "",
+  //             price: "",
+  //             categoryType: "",
+  //             availability: "",
+  //             imageName: "",
+  //           },
+  //         ],
+  //       },
+  //     },
+  //   }));
+  // };
+
   // Use useEffect to fetch initial vendor data
   useEffect(() => {
     setFetchingData(true);
@@ -307,14 +311,15 @@ const VendorDetailsPage = () => {
                 >
                   <AccordionTrigger>{vendor.name}</AccordionTrigger>
                 </button>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="shop-disable"
-                    onClick={() => handleToggleDisableShop(vendor.number)}
-                  />
-                  <Label htmlFor="shop-disable">Shop disable</Label>
-                </div>
+
                 <div className="flex items-center gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Label htmlFor="shop-disable">Disable Shop</Label>
+                    <Switch
+                      id="shop-disable"
+                      onClick={() => handleToggleDisableShop(vendor.number)}
+                    />
+                  </div>
                   <Badge
                     onClick={() => handleToggleStore(vendor.number)}
                     className="bg-green-500 cursor-pointer hover:bg-green-600 p-2"

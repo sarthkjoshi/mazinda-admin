@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
-const Alert = () => {
+const AlertDetails = () => {
   const [alertData, setAlertData] = useState({ message: "", isActive: false });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -52,41 +53,41 @@ const Alert = () => {
     <div className="flex justify-center flex-col bg-white p-4 rounded-lg w-[500px] border border-gray-200">
       <h1 className="text-2xl font-semibold mb-5 text-center">Alert</h1>
       {editMode ? (
-        <>
-          <label>
-            Message:
-            <input
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <label>Message:</label>
+            <Input
               type="text"
               name="message"
               value={alertData.message}
               onChange={handleInputChange}
             />
-          </label>
-          <label>
-            Active:
+          </div>
+          <div className="flex gap-3">
+            <label>Active:</label>
             <input
               type="checkbox"
               name="isActive"
               checked={alertData.isActive}
               onChange={handleInputChange}
             />
-          </label>
+          </div>
           <div className="flex gap-2">
             <Button onClick={handleUpdateAlert}>Update Alert</Button>
             <Button onClick={() => setEditMode(false)}>Cancel</Button>
           </div>
-        </>
+        </div>
       ) : (
-        <>
+        <div className="flex flex-col gap-3">
           <p>Message: {alertData.message}</p>
           <p>Active: {alertData.isActive ? "Yes" : "No"}</p>
           <Button className="w-16" onClick={() => setEditMode(true)}>
             Edit
           </Button>
-        </>
+        </div>
       )}
     </div>
   );
 };
 
-export default Alert;
+export default AlertDetails;

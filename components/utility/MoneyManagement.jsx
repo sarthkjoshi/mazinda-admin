@@ -36,7 +36,7 @@ const MoneyManagement = () => {
   }, []);
 
   return (
-    <div className="container mx-auto p-4 md:w-2/3">
+    <div className="p-4 md:w-2/3 bg-white">
       <h1 className="text-2xl font-semibold mb-5 text-center">
         Money Management
       </h1>
@@ -47,10 +47,14 @@ const MoneyManagement = () => {
           <ul>
             {vendorData.vendors.map((vendor) => (
               <AccordionItem value={vendor._id} className="my-2">
-                <div className="border border-gray-300 rounded-md p-2">
+                <div className="border border-gray-300 rounded-md py-2 px-5">
                   <AccordionTrigger>
-                    <h2 className="text-lg font-semibold">{vendor.name}</h2>
-                    <p>Current Pay Percentage: {vendor.payPercentage}</p>
+                    <h2 className="text-lg font-semibold">
+                      {vendor.name}{" "}
+                      <span className="text-red-500">
+                        ({vendor.payPercentage}%)
+                      </span>
+                    </h2>
                   </AccordionTrigger>
                   <AccordionContent>
                     <Accordions payouts={vendor.payouts} name={vendor.name} />
@@ -75,7 +79,7 @@ const Accordions = ({ payouts, name }) => {
   return (
     <div>
       {Object.keys(payouts).map((date) => (
-        <div key={date} className="border-t mt-2">
+        <div key={date} className="border-t p-2">
           <div
             className="flex justify-between cursor-pointer"
             onClick={() => handleAccordions(date)}
@@ -85,31 +89,34 @@ const Accordions = ({ payouts, name }) => {
             {open === date ? <MinusCircle /> : <PlusCircle />}
           </div>
           {open === date && (
-            <>
-              <h2>
-                Dear <strong>{name}</strong>, find the settlement details for{" "}
-                {date} below:
-              </h2>
-              <ul className="mt-2">
-                {payouts[date].map((payout, index) => (
-                  <li key={index} className="flex flex-col gap-2  p-2">
-                    <p>
-                      <strong>Order ID:</strong>
-                      {trimToLastNCharacters(payout.orderId, 5)}
-                    </p>
-                    <p>
-                      <strong>Amount: ₹</strong> {payout.totalAmount}
-                    </p>
+            <div className="px-2 py-6">
+              <div className="border rounded-sm p-3">
+                <h2>
+                  Dear <strong>{name}</strong>, find the settlement details for{" "}
+                  {date} below:
+                </h2>
+                <ul className="mt-2">
+                  {payouts[date].map((payout, index) => (
+                    <li key={index} className="flex flex-col gap-2  p-2">
+                      <p>
+                        <strong>Order ID:</strong>
+                        {trimToLastNCharacters(payout.orderId, 5)}
+                      </p>
+                      <p>
+                        <strong>Amount: ₹</strong> {payout.totalAmount}
+                      </p>
+                    </li>
+                  ))}
+                  <li className="font-semibold border-t p-2">
+                    Total Amount To Be Paid Today: ₹
+                    {payouts[date].reduce(
+                      (total, payout) => total + payout.totalAmount,
+                      0
+                    )}
                   </li>
-                ))}
-                <li className="font-semibold border-t p-2">
-                  Total Amount To Be Paid Today: ₹
-                  {payouts[date].reduce(
-                    (total, payout) => total + payout.totalAmount,
-                    0
-                  )}
-                </li>
-              </ul>
+                </ul>
+              </div>
+
               <table className="w-full mt-4 ">
                 <thead>
                   <tr>
@@ -156,7 +163,7 @@ const Accordions = ({ payouts, name }) => {
                   ))}
                 </tbody>
               </table>
-            </>
+            </div>
           )}
         </div>
       ))}
