@@ -3,6 +3,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import OvalLoader from "./OvalLoader";
 import { MinusCircle, PlusCircle } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 function trimToLastNCharacters(str, n) {
   if (typeof str !== "string" || typeof n !== "number" || n < 0) {
     return "Invalid input";
@@ -33,29 +40,35 @@ const MoneyManagement = () => {
       <h1 className="text-2xl font-semibold mb-5 text-center">
         Money Management
       </h1>
-      {fetchingData ? (
-        <OvalLoader />
-      ) : (
-        <ul>
-          {vendorData.vendors.map((vendor) => (
-            <li key={vendor._id} className="my-2">
-              <div className="border border-gray-300 rounded-md p-2">
-                <h2 className="text-lg font-semibold">{vendor.name}</h2>
-                <p>Current Pay Percentage: {vendor.payPercentage}</p>
-                <Accordion payouts={vendor.payouts} name={vendor.name} />
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+      <Accordion type="single" collapsible className="w-full">
+        {fetchingData ? (
+          <OvalLoader />
+        ) : (
+          <ul>
+            {vendorData.vendors.map((vendor) => (
+              <AccordionItem value={vendor._id} className="my-2">
+                <div className="border border-gray-300 rounded-md p-2">
+                  <AccordionTrigger>
+                    <h2 className="text-lg font-semibold">{vendor.name}</h2>
+                    <p>Current Pay Percentage: {vendor.payPercentage}</p>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <Accordions payouts={vendor.payouts} name={vendor.name} />
+                  </AccordionContent>
+                </div>
+              </AccordionItem>
+            ))}
+          </ul>
+        )}
+      </Accordion>
     </div>
   );
 };
 
-const Accordion = ({ payouts, name }) => {
+const Accordions = ({ payouts, name }) => {
   const [open, setOpen] = useState(null);
 
-  const handleAccordion = (date) => {
+  const handleAccordions = (date) => {
     setOpen((prev) => (prev === date ? null : date));
   };
 
@@ -65,7 +78,7 @@ const Accordion = ({ payouts, name }) => {
         <div key={date} className="border-t mt-2">
           <div
             className="flex justify-between cursor-pointer"
-            onClick={() => handleAccordion(date)}
+            onClick={() => handleAccordions(date)}
           >
             <p className="font-semibold">{date}</p>
             <p>{payouts[date].length} payouts</p>

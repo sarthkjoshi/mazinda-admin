@@ -56,7 +56,7 @@ const CutleryDetails = () => {
   };
 
   return (
-    <div className="flex justify-center flex-col bg-white w-fit p-4 rounded-lg">
+    <div className="flex justify-center flex-col bg-white  p-4 rounded-lg w-[500px] border border-gray-200">
       <h1 className="text-2xl font-semibold mb-5 text-center">
         Cutlery Details
       </h1>
@@ -111,7 +111,7 @@ const CutleryDetails = () => {
             <strong>Price:</strong>
             {cutlery.price}
           </p>
-          <Button type="button" onClick={handleEditModeToggle}>
+          <Button className="w-16" type="button" onClick={handleEditModeToggle}>
             Edit
           </Button>
         </div>

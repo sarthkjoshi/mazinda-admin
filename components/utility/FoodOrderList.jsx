@@ -375,7 +375,7 @@ const MyOrdersPage = () => {
                       </table>
                     </div>
                     <div
-                      className="flex mt-2"
+                      className="flex mt-2 items-center justify-center flex-col md:flex-row "
                       onClick={(event) => {
                         event.stopPropagation();
                       }}
@@ -449,7 +449,7 @@ const MyOrdersPage = () => {
                         )}
                       </div>
 
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-center flex-col gap-1 md:flex-row">
                         <select
                           value={selectedDeliveryBoy}
                           onChange={(e) =>

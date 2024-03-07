@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const StoreSchema = new mongoose.Schema({
+const StoreSchema = new mongoose.Schema(
+  {
     ownerName: { type: String, required: true },
     storeName: { type: String, required: true },
     mobileNumber: { type: Number, required: true, unique: true },
@@ -10,8 +11,11 @@ const StoreSchema = new mongoose.Schema({
     storeAddress: { type: Object, required: true },
     category: { type: String },
     openStatus: { type: Boolean, default: true },
-    approvedStatus: { type: String, default: "pending" }
-}, { timestamps: true });
+    approvedStatus: { type: String, default: "pending" },
+    disableShop: { type: Boolean, deafult: false },
+  },
+  { timestamps: true }
+);
 
-mongoose.models = {}
+mongoose.models = {};
 export default mongoose.model("Store", StoreSchema);
