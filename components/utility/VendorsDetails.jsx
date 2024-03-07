@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +21,32 @@ const VendorDetailsPage = () => {
     const d = new Date(date);
     return d.toString();
   };
+  const handleToggleStore = async (number) => {
+    try {
+      const { data } = await axios.put("/api/vendorDetails/togglestore", {
+        number,
+      });
 
+      if (data.success) {
+        toast.success(data.message, { autoClose: 3000 });
+      }
+    } catch (err) {
+      console.log("An error occurred: " + err.message);
+    }
+  };
+  const handleToggleDisableShop = async (number) => {
+    try {
+      const response = await axios.put("/api/vendorDetails/toggledisableshop", {
+        number,
+      });
+      console.log("sarthak", response.data);
+      if (response.data.success) {
+        toast.success(response.data.message, { autoClose: 3000 });
+      }
+    } catch (err) {
+      console.log("An error occurred: " + err.message);
+    }
+  };
   // Function to handle adding a new delivery location
   const handleAddLocation = (vendorId, newLocation) => {
     setEditedData((prevEditedData) => ({
@@ -281,10 +307,16 @@ const VendorDetailsPage = () => {
                 >
                   <AccordionTrigger>{vendor.name}</AccordionTrigger>
                 </button>
-
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="shop-disable"
+                    onClick={() => handleToggleDisableShop(vendor.number)}
+                  />
+                  <Label htmlFor="shop-disable">Shop disable</Label>
+                </div>
                 <div className="flex items-center gap-2">
                   <Badge
-                    onClick={() => handleToggle(vendor.number)}
+                    onClick={() => handleToggleStore(vendor.number)}
                     className="bg-green-500 cursor-pointer hover:bg-green-600 p-2"
                   >
                     {"Toggle"}

@@ -1,13 +1,14 @@
 import connectDB from "@/libs/mongoose";
-import Mode from "@/models/Mode";
+import FoodDetail from "@/models/FoodDetail";
+
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     await connectDB();
 
-    const modeDoc = await Mode.findOne({});
-    const mode = modeDoc.mode;
+    const foodDetails = await FoodDetail.findOne({});
+    const mode = foodDetails.mode.mode;
 
     return NextResponse.json({ success: true, mode });
   } catch (error) {
@@ -22,8 +23,8 @@ export async function POST(req) {
   try {
     await connectDB();
     const { newMode } = await req.json();
-    console.log(newMode);
-    const agya = await Mode.updateOne({}, { mode: newMode }, { upsert: true });
+
+    await FoodDetail.updateOne({}, { mode: newMode }, { upsert: true });
 
     return NextResponse.json({ success: true, newMode });
   } catch (error) {

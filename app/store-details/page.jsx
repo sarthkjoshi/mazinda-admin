@@ -5,7 +5,8 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import OvalLoader from "@/components/utility/OvalLoader";
 import { toast } from "react-toastify";
-
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 const StoreDetails = () => {
   const [loading, setLoading] = useState(true);
   const [storeData, setStoreData] = useState({});
@@ -79,7 +80,19 @@ const StoreDetails = () => {
       });
     }
   };
+  const handleToggleDisableStore = async (id) => {
+    try {
+      const response = await axios.put("/api/store/toggledisablestore", {
+        id,
+      });
 
+      if (response.data.success) {
+        toast.success(response.data.message, { autoClose: 3000 });
+      }
+    } catch (err) {
+      console.log("An error occurred: " + err.message);
+    }
+  };
   return (
     <div className="container mx-auto p-4 bg-white shadow-sm rounded-xl">
       <h1 className="text-3xl font-semibold mb-4">Store Details</h1>
@@ -265,7 +278,9 @@ const StoreDetails = () => {
             <div className="flex">
               <button
                 onClick={handleSaveClick}
-                className={`${!saveLoading ? "bg-[#fb691e]" : "bg-gray-300"} my-2 text-white px-4 py-2 rounded-md hover:opacity-70 focus:outline-none transition-all duration-300`}
+                className={`${
+                  !saveLoading ? "bg-[#fb691e]" : "bg-gray-300"
+                } my-2 text-white px-4 py-2 rounded-md hover:opacity-70 focus:outline-none transition-all duration-300`}
               >
                 {!saveLoading ? "Save" : "Saving..."}
               </button>
@@ -286,6 +301,13 @@ const StoreDetails = () => {
           )}
         </>
       )}
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="shop-disable"
+          onClick={() => handleToggleDisableStore(id)}
+        />
+        <Label htmlFor="shop-disable">Store disable</Label>
+      </div>
     </div>
   );
 };

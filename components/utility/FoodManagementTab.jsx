@@ -5,7 +5,8 @@ import FoodOrdersList from "@/components/utility/FoodOrderList";
 import VendorDetailsPage from "./VendorsDetails";
 import VendorForm from "./VendorForm";
 import MoneyManagement from "./MoneyManagement";
-import CutleryDetails from "./CutleryDetails";
+
+import FoodDetails from "./FoodDetails";
 
 const FoodManagementTab = ({ filter }) => {
   const [activeTab, setActiveTab] = useState("foodorders");
@@ -105,7 +106,7 @@ const FoodManagementTab = ({ filter }) => {
               aria-selected={activeTab === "cutlerydetails"}
               onClick={() => handleTabClick("cutlerydetails")}
             >
-              Cutlery Details
+              Food Details
             </button>
           </li>
         </ul>
@@ -159,7 +160,7 @@ const FoodManagementTab = ({ filter }) => {
           role="tabpanel"
           aria-labelledby="cutlerydetails-tab"
         >
-          <CutleryDetails />
+          <FoodDetails />
         </div>
       </div>
     </>
