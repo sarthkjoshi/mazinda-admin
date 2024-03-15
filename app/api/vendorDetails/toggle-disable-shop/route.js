@@ -4,18 +4,18 @@ import { NextResponse } from "next/server";
 
 export async function PUT(req) {
   try {
-    const { number } = await req.json();
+    const { id } = await req.json();
 
     // Connecting to database
     await connectDB();
 
     // Checking if the Vendor already exists
-    let vendor = await Vendor.findOne({ number });
+    let vendor = await Vendor.findById(id);
 
     if (vendor) {
-      vendor.disableShop = !vendor.disableShop;
+      vendor.disabled = !vendor.disabled;
       await vendor.save();
-      if (vendor.disableShop === true) {
+      if (vendor.disabled === true) {
         return NextResponse.json({
           success: true,
           message: `${vendor.name} disabled successfully`,

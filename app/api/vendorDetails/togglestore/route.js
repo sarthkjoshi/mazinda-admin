@@ -17,7 +17,9 @@ export async function PUT(req) {
       await vendor.save();
       return NextResponse.json({
         success: true,
-        message: "openStatus toggled successfully",
+        message: `${vendor.name} ${
+          vendor.openStatus ? "opened" : "closed"
+        } successfully`,
       });
     } else {
       return NextResponse.json({

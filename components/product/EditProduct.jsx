@@ -329,7 +329,7 @@ const EditProduct = ({ id }) => {
                 <Input
                   type="text"
                   name="pricing.mrp"
-                  value={productData.pricing.mrp}
+                  value={productData?.pricing?.mrp}
                   onChange={handleChange}
                 />
               </div>
@@ -338,7 +338,7 @@ const EditProduct = ({ id }) => {
                 <Input
                   type="text"
                   name="pricing.costPrice"
-                  value={productData.pricing.costPrice}
+                  value={productData?.pricing?.costPrice}
                   onChange={handleChange}
                 />
               </div>
@@ -347,7 +347,7 @@ const EditProduct = ({ id }) => {
                 <Input
                   type="text"
                   name="pricing.salesPrice"
-                  value={productData.pricing.salesPrice}
+                  value={productData?.pricing?.salesPrice}
                   onChange={handleChange}
                 />
               </div>

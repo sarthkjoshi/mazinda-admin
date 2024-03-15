@@ -7,8 +7,17 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { toast } from "react-toastify";
 import OvalLoader from "./OvalLoader";
 import Mode from "./Mode";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const MyOrdersPage = () => {
+const FoodOrderList = () => {
   const router = useRouter();
 
   //for delivery boys
@@ -375,23 +384,21 @@ const MyOrdersPage = () => {
                       </table>
                     </div>
                     <div
-                      className="flex mt-2 items-center justify-center flex-col md:flex-row "
+                      className="flex mt-2 gap-2 justify-center flex-col"
                       onClick={(event) => {
                         event.stopPropagation();
                       }}
                     >
                       <div>
-                        {!showCancelConfirmation && (
-                          <button
-                            className="text-sm bg-yellow-300 text-yellow-700 p-2 m-2 rounded-md shadow"
+                        {!showCancelConfirmation ? (
+                          <Button
+                            className="bg-yellow-400 hover:bg-yellow-500"
                             onClick={() => setShowCancelConfirmation(true)}
                           >
                             Cancel Order
-                          </button>
-                        )}
-
-                        {showCancelConfirmation && (
-                          <div>
+                          </Button>
+                        ) : (
+                          <div className="py-3">
                             <span>
                               Are you sure you want to cancel this order
                             </span>
@@ -415,59 +422,62 @@ const MyOrdersPage = () => {
                       </div>
 
                       <div>
-                        {!showDeleteConfirmation && (
-                          <button
-                            className="text-sm bg-red-500 text-white p-2 m-2 rounded-md shadow"
+                        {!showDeleteConfirmation ? (
+                          <Button
+                            className="bg-red-500 hover:bg-red-600"
                             onClick={() => setShowDeleteConfirmation(true)}
                           >
                             Permanently Delete
-                          </button>
-                        )}
-
-                        {showDeleteConfirmation && (
-                          <div>
-                            <span>
+                          </Button>
+                        ) : (
+                          <div className="flex flex-col">
+                            <Label>
                               Are you sure you want to permanently delete this
                               order?
-                            </span>
-                            <button
-                              className="bg-gray-500 px-2 py-1 rounded-md text-white text-sm mx-1"
-                              onClick={() => {
-                                handleDeleteOrderClick(order._id);
-                                setShowDeleteConfirmation(false);
-                              }}
-                            >
-                              Yes
-                            </button>
-                            <button
-                              className="bg-gray-500 px-2 py-1 rounded-md text-white text-sm mx-1"
-                              onClick={() => setShowDeleteConfirmation(false)}
-                            >
-                              No
-                            </button>
+                            </Label>
+                            <div>
+                              <Button
+                                onClick={() => {
+                                  handleDeleteOrderClick(order._id);
+                                  setShowDeleteConfirmation(false);
+                                }}
+                              >
+                                Yes
+                              </Button>
+                              <Button
+                                onClick={() => setShowDeleteConfirmation(false)}
+                              >
+                                No
+                              </Button>
+                            </div>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex items-center justify-center flex-col gap-1 md:flex-row">
-                        <select
+                      <div className="flex items-center flex-col gap-1 md:flex-row">
+                        <Select
                           value={selectedDeliveryBoy}
-                          onChange={(e) =>
-                            setSelectedDeliveryBoy(e.target.value)
+                          onValueChange={(value) =>
+                            setSelectedDeliveryBoy(value)
                           }
                         >
-                          <option value="">Select Delivery Boy</option>
-                          {deliveryBoys.map((deliveryBoy) => (
-                            <option
-                              key={deliveryBoy._id}
-                              value={deliveryBoy._id}
-                            >
-                              {deliveryBoy.name}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          className="bg-gray-500 px-2 py-1 rounded-md text-white text-sm mx-1"
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Delivery Boy" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {deliveryBoys.map((deliveryBoy) => (
+                              <SelectItem
+                                key={deliveryBoy._id}
+                                value={deliveryBoy._id}
+                              >
+                                {deliveryBoy.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+
+                        <Button
+                          variant="secondary"
                           onClick={(e) =>
                             handleAssignDeliveryBoy(
                               order._id,
@@ -480,7 +490,7 @@ const MyOrdersPage = () => {
                           disabled={!selectedDeliveryBoy.length}
                         >
                           Assign
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -499,4 +509,4 @@ const MyOrdersPage = () => {
   );
 };
 
-export default MyOrdersPage;
+export default FoodOrderList;

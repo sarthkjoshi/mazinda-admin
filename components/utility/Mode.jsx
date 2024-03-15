@@ -11,10 +11,9 @@ const Mode = () => {
   useEffect(() => {
     async function fetchMode() {
       try {
-        const response = await axios.get("/api/mode");
-        const fetchedMode = response.data.mode;
-        setMode(fetchedMode);
-        setIsAutomatic(fetchedMode === "automatic");
+        const { data } = await axios.get("/api/mode");
+        setMode(data.mode);
+        setIsAutomatic(data.mode === "automatic");
       } catch (error) {
         console.error("Error getting mode:", error);
       } finally {
@@ -49,13 +48,15 @@ const Mode = () => {
   }
 
   return (
-    <div>
+    <div className="border w-fit p-3 my-2 rounded-lg">
       <p>
-        Current Mode:{" "}
-        <span className="text-red-600 bg-gray-300 p-1 rounded-md">{mode}</span>
+        Delivery Mode:{" "}
+        <span className="text-red-600 bg-gray-300 py-1 px-2 rounded-md">
+          {mode}
+        </span>
       </p>
 
-      <div className="flex gap-5 m-2">
+      <div className="flex gap-5 my-2">
         <p>{isAutomatic ? "Automatic Mode" : "Manual Mode"}</p>
 
         <label className="switch">

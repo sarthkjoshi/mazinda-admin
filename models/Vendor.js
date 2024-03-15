@@ -20,7 +20,7 @@ const VendorSchema = new mongoose.Schema(
     menu: { type: Object, default: {} },
     payPercentage: { type: Number },
     payouts: { type: Object },
-    disableShop: { type: Boolean, deafult: false },
+    disabled: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -7,14 +7,21 @@ export async function GET() {
   try {
     await connectDB();
 
-    const foodDetails = await FoodDetail.findOne({});
-    const mode = foodDetails.mode.mode;
-
-    return NextResponse.json({ success: true, mode });
+    const foodDetails = await FoodDetail.findOne();
+    if (foodDetails) {
+      return NextResponse.json({ success: true, mode: foodDetails.mode });
+    } else {
+      return NextResponse.json({
+        success: false,
+        message: "Mode not found",
+        error,
+      });
+    }
   } catch (error) {
     return NextResponse.json({
       success: false,
-      error: "An error occurred while fetching the mode: " + error,
+      message: "An error occurred while fetching the mode",
+      error,
     });
   }
 }
