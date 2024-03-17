@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const Navbar = () => {
   return (
-    <nav className="bg-white p-4 flex justify-between">
+    <nav className="bg-white px-6 py-5 flex justify-between">
       <Link href="/">
         <Image width={120} src={MazindaLogo} alt="Mazinda Logo" />
       </Link>

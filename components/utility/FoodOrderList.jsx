@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import OvalLoader from "./OvalLoader";
 import Mode from "./Mode";
 import { Button } from "../ui/button";
-import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
@@ -39,16 +38,6 @@ const FoodOrderList = () => {
   const [allDeliveredButtonLoading, setAllDeliveredButtonLoading] =
     useState(false);
 
-  const fetchVendor = async (vendorId) => {
-    const { data } = await axios.post(
-      `https://citikartt.com/api/vendor/fetchvendorbyid`,
-      {
-        _id: vendorId,
-      }
-    );
-    return data;
-  };
-
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -62,24 +51,12 @@ const FoodOrderList = () => {
           setHasMore(false);
         }
 
-        // Update orders with vendor names
-        const ordersWithVendors = await Promise.all(
-          newOrders.map(async (order) => {
-            const vendorInfo = await fetchVendor(order.vendorId);
-            return {
-              ...order,
-              vendorName: vendorInfo.vendor.name,
-              deliveryCharges: vendorInfo.vendor.deliveryCharges,
-            };
-          })
-        );
-
         if (page === 1) {
           // If this is the initial fetch, set orders
-          setOrders(ordersWithVendors);
+          setOrders(newOrders);
         } else {
           // If this is not the initial fetch, append to orders
-          setOrders((prevOrders) => prevOrders.concat(ordersWithVendors));
+          setOrders((prevOrders) => prevOrders.concat(newOrders));
         }
         setLoading(false);
       } catch (error) {
@@ -282,31 +259,37 @@ const FoodOrderList = () => {
                     {new Date(order.createdAt).toLocaleString()}
                   </p>
 
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <h2 className="text-md font-semibold">
                       Order ID:{" "}
                       <span className="text-sm font-normal text-gray-600">
                         {order._id.slice(-4)}
                       </span>
                     </h2>
-                    {/* <h2 className="text-md font-semibold">
-                    Full Order ID :{" "}
-                    <span className="text-sm font-normal text-gray-600">
-                      {order._id}
-                    </span>
-                  </h2> */}
-                    <p
-                      style={{
-                        color:
-                          order.status === "Processing"
-                            ? "orange"
-                            : order.status === "Delivered"
-                            ? "green"
-                            : "#f7cd00",
-                      }}
-                    >
-                      <span>{order.status} </span>
-                    </p>
+                    <div className="flex flex-col items-center gap-1">
+                      <p
+                        style={{
+                          color:
+                            order.status === "Processing"
+                              ? "orange"
+                              : order.status === "Delivered"
+                              ? "green"
+                              : "#f7cd00",
+                        }}
+                      >
+                        <span>{order.status} </span>
+                      </p>
+
+                      {order.deliveryBoyId ? (
+                        <span className="bg-green-100 text-green-600 text-[12px] px-3 py-1 rounded-xl">
+                          Delivery Alloted
+                        </span>
+                      ) : (
+                        <span className="bg-yellow-100 text-yellow-600 text-[12px] px-3 py-1 rounded-xl">
+                          Delivery Not Alloted
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between mt-2">
@@ -330,11 +313,6 @@ const FoodOrderList = () => {
                     <p className="text-gray-600">
                       <strong>Vendor:</strong> {order.vendorName}
                     </p>
-                    {/* no user name */}
-                    {/* <p className="text-gray-600">
-                      <strong>User:</strong>{" "}
-                      {order.userName ? order.userName : ""}
-                    </p> */}
                     <p className="text-gray-600">
                       <strong>Delivery Address:</strong>
                     </p>
@@ -389,69 +367,80 @@ const FoodOrderList = () => {
                         event.stopPropagation();
                       }}
                     >
-                      <div>
-                        {!showCancelConfirmation ? (
-                          <Button
-                            className="bg-yellow-400 hover:bg-yellow-500"
-                            onClick={() => setShowCancelConfirmation(true)}
-                          >
-                            Cancel Order
-                          </Button>
-                        ) : (
-                          <div className="py-3">
-                            <span>
-                              Are you sure you want to cancel this order
-                            </span>
-                            <button
-                              className="bg-gray-500 px-2 py-1 rounded-md text-white text-sm mx-1"
-                              onClick={() => {
-                                handleOrderCancel(order._id);
-                                setShowCancelConfirmation(false);
-                              }}
+                      <div className="flex gap-3 items-center">
+                        <div>
+                          {!showCancelConfirmation ? (
+                            <Button
+                              className="bg-yellow-400 hover:bg-yellow-500"
+                              onClick={() => setShowCancelConfirmation(true)}
                             >
-                              Yes
-                            </button>
-                            <button
-                              className="bg-gray-500 px-2 py-1 rounded-md text-white text-sm mx-1"
-                              onClick={() => setShowCancelConfirmation(false)}
-                            >
-                              No
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                              Cancel Order
+                            </Button>
+                          ) : (
+                            <div className="py-3">
+                              <span>
+                                Are you sure you want to cancel this order?
+                              </span>
 
-                      <div>
-                        {!showDeleteConfirmation ? (
-                          <Button
-                            className="bg-red-500 hover:bg-red-600"
-                            onClick={() => setShowDeleteConfirmation(true)}
-                          >
-                            Permanently Delete
-                          </Button>
-                        ) : (
-                          <div className="flex flex-col">
-                            <Label>
-                              Are you sure you want to permanently delete this
-                              order?
-                            </Label>
-                            <div>
-                              <Button
-                                onClick={() => {
-                                  handleDeleteOrderClick(order._id);
-                                  setShowDeleteConfirmation(false);
-                                }}
-                              >
-                                Yes
-                              </Button>
-                              <Button
-                                onClick={() => setShowDeleteConfirmation(false)}
-                              >
-                                No
-                              </Button>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="secondary"
+                                  onClick={() => {
+                                    handleOrderCancel(order._id);
+                                    setShowCancelConfirmation(false);
+                                  }}
+                                >
+                                  Yes
+                                </Button>
+                                <Button
+                                  variant="secondary"
+                                  onClick={() =>
+                                    setShowCancelConfirmation(false)
+                                  }
+                                >
+                                  No
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
+
+                        <div>
+                          {!showDeleteConfirmation ? (
+                            <Button
+                              className="bg-red-500 hover:bg-red-600"
+                              onClick={() => setShowDeleteConfirmation(true)}
+                            >
+                              Permanently Delete
+                            </Button>
+                          ) : (
+                            <div className="flex flex-col">
+                              <span>
+                                Are you sure you want to permanently delete this
+                                order?
+                              </span>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="secondary"
+                                  onClick={() => {
+                                    handleDeleteOrderClick(order._id);
+                                    setShowDeleteConfirmation(false);
+                                  }}
+                                >
+                                  Yes
+                                </Button>
+                                <Button
+                                  variant="secondary"
+                                  onClick={() =>
+                                    setShowDeleteConfirmation(false)
+                                  }
+                                >
+                                  No
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex items-center flex-col gap-1 md:flex-row">
@@ -465,14 +454,16 @@ const FoodOrderList = () => {
                             <SelectValue placeholder="Select Delivery Boy" />
                           </SelectTrigger>
                           <SelectContent>
-                            {deliveryBoys.map((deliveryBoy) => (
-                              <SelectItem
-                                key={deliveryBoy._id}
-                                value={deliveryBoy._id}
-                              >
-                                {deliveryBoy.name}
-                              </SelectItem>
-                            ))}
+                            {deliveryBoys.map((deliveryBoy) =>
+                              deliveryBoy.isAvailable ? (
+                                <SelectItem
+                                  key={deliveryBoy._id}
+                                  value={deliveryBoy._id}
+                                >
+                                  {deliveryBoy.name}
+                                </SelectItem>
+                              ) : null
+                            )}
                           </SelectContent>
                         </Select>
 

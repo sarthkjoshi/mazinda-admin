@@ -46,7 +46,11 @@ const MoneyManagement = () => {
         ) : (
           <ul>
             {vendorData.vendors.map((vendor) => (
-              <AccordionItem value={vendor._id} className="my-2">
+              <AccordionItem
+                key={vendor._id}
+                value={vendor._id}
+                className="my-2"
+              >
                 <div className="border border-gray-300 rounded-md py-2 px-5">
                   <AccordionTrigger>
                     <h2 className="text-lg font-semibold">

@@ -40,7 +40,6 @@ const VendorDetailsPage = () => {
         "/api/vendorDetails/toggle-disable-shop",
         { id }
       );
-      console.log(data);
       if (data.success) {
         toast.success(data.message, { autoClose: 3000 });
       }
@@ -226,7 +225,6 @@ const VendorDetailsPage = () => {
     setFetchingData(true);
     const fetchVendors = async () => {
       const { data } = await axios.get("/api/vendorDetails");
-      console.log(data);
       setVendorData(data.vendors);
       setFetchingData(false);
     };

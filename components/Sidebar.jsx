@@ -23,7 +23,7 @@ const Sidebar = () => {
     },
   });
 
-  console.log(session?.user);
+  // console.log(session?.user);
 
   return (
     <>
