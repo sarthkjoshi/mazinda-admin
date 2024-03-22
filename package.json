@@ -34,6 +34,7 @@
     "clsx": "^2.0.0",
     "crypto-js": "^4.1.1",
     "crypto-random-string": "^5.0.0",
+    "csv-parser": "^3.0.0",
     "eslint-config-next": "^14.1.2",
     "flowbite": "^1.8.1",
     "flowbite-react": "^0.6.4",
