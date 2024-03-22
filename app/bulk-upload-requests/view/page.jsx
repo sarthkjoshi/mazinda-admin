@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Readable } from "stream";
 import csv from "csv-parser";
+import OvalLoader from "@/components/utility/OvalLoader";
 
 const ViewRequest = () => {
   const searchParams = useSearchParams();
@@ -17,6 +18,7 @@ const ViewRequest = () => {
   const [request, setRequest] = useState({});
   const [products, setProducts] = useState([]);
 
+  const [loading, setLoading] = useState(true);
   const [approveLoading, setApproveLoading] = useState(false);
 
   function parseCSV(csvData, callback) {
@@ -63,6 +65,12 @@ const ViewRequest = () => {
         salesPrice: structuredProduct.salesPrice,
       };
 
+      // Structuring tags
+      let updated_tags = structuredProduct.tags
+        .split(",")
+        .filter((tag) => tag !== "")
+        .map((tag) => tag.trim());
+
       // deleting all the extra key value pairs
       delete structuredProduct.descriptionHeading;
       delete structuredProduct.description;
@@ -74,6 +82,7 @@ const ViewRequest = () => {
       structuredProduct.description = formattedDescription;
       structuredProduct.imagePaths = updated_image_paths;
       structuredProduct.pricing = structured_pricing;
+      structuredProduct.tags = updated_tags;
 
       return structuredProduct;
     });
@@ -114,6 +123,7 @@ const ViewRequest = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       const { data } = await axios.post("/api/bulk-upload/fetch-request", {
         request_id,
@@ -133,8 +143,17 @@ const ViewRequest = () => {
       } else {
         console.log("An error occurred");
       }
+      setLoading(false);
     })();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-white p-5 flex items-center justify-center">
+        <OvalLoader />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-3 rounded-md flex flex-col">

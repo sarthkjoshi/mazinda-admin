@@ -1,6 +1,7 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
+import { Badge } from "../ui/badge";
 
 const ViewBulkProduct = ({ productData }) => {
   return (
