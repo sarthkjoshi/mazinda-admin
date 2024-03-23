@@ -18,6 +18,7 @@ const FoodOrderSchema = new mongoose.Schema(
     paymentMethod: { type: String },
     status: { type: String, default: "Processing" },
     deliveryBoyId: { type: mongoose.Schema.Types.ObjectId, ref: "DeliveryBoy" },
+    isReady: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

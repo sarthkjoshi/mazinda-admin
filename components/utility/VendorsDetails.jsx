@@ -100,7 +100,7 @@ const VendorDetailsPage = () => {
   const [editedPayPercentage, setEditedPayPercentage] = useState({});
   const [editedWhatsappGroupId, setEditedWhatsappGroupId] = useState("");
   const [editedPriority, setEditedPriority] = useState("");
-
+  const [error, setError] = useState({});
   const handleEditClick = (vendorId) => {
     setEditMode((prevEditMode) => ({
       ...prevEditMode,
@@ -142,13 +142,18 @@ const VendorDetailsPage = () => {
   };
 
   const handleInputChange = (vendorId, fieldName, value) => {
-    setEditedData((prevEditedData) => ({
-      ...prevEditedData,
-      [vendorId]: {
-        ...prevEditedData[vendorId],
-        [fieldName]: value,
-      },
-    }));
+    if (fieldName === "description" && value.length > 15) {
+      setError({ [vendorId]: "Description cannot exceed 15 characters" });
+    } else {
+      setError({});
+      setEditedData((prevEditedData) => ({
+        ...prevEditedData,
+        [vendorId]: {
+          ...prevEditedData[vendorId],
+          [fieldName]: value,
+        },
+      }));
+    }
   };
 
   const handleDeliveryChargeChange = (vendorId, location, value) => {
@@ -505,8 +510,30 @@ const VendorDetailsPage = () => {
                     )}
                   </div>
                   <br />
+                  <div className="flex items-center gap-2">
+                    <b>Description</b>{" "}
+                    {editMode[vendor._id] ? (
+                      <Input
+                        type="text"
+                        value={editedData[vendor._id]?.description || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            vendor._id,
+                            "description",
+                            e.target.value
+                          )
+                        }
+                      />
+                    ) : (
+                      <>{vendor.description}</>
+                    )}
+                  </div>
+                  {error[vendor._id] && (
+                    <div className="text-red-500">{error[vendor._id]}</div>
+                  )}
+                  <br />
                   <div>
-                    <b>Delivery Charges (For deliveries done by vendor):</b>{" "}
+                    <b>Delivery Charges (For deliveries done by vendor):</b>
                     {editMode[vendor._id] ? (
                       <div>
                         {Object.entries(editedDeliveryCharges[vendor._id]).map(
@@ -548,6 +575,7 @@ const VendorDetailsPage = () => {
                     )}
                   </div>
                   <br />
+
                   <div>
                     <b>Min Order Value:</b>{" "}
                     {editMode[vendor._id] ? (

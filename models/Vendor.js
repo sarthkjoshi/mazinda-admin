@@ -21,6 +21,10 @@ const VendorSchema = new mongoose.Schema(
     payPercentage: { type: Number },
     payouts: { type: Object },
     disabled: { type: Boolean, default: false },
+    description: {
+      type: String,
+      maxlength: 15,
+    },
   },
   { timestamps: true }
 );
