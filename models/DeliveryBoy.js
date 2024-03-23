@@ -18,6 +18,10 @@ const DeliveryBoySchema = new mongoose.Schema(
       type: String,
       default: "abcdef",
     },
+    isAvailable: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

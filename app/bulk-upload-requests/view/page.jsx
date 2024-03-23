@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import BulkProductList from "@/components/product/BulkProductsList";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { Readable } from "stream";
+import csv from "csv-parser";
+import OvalLoader from "@/components/utility/OvalLoader";
 
 const ViewRequest = () => {
   const searchParams = useSearchParams();
@@ -15,53 +18,22 @@ const ViewRequest = () => {
   const [request, setRequest] = useState({});
   const [products, setProducts] = useState([]);
 
+  const [loading, setLoading] = useState(true);
   const [approveLoading, setApproveLoading] = useState(false);
 
-  // Function to parse CSV data and convert it into an array of objects
-  const parseCSV = (csvData) => {
-    // Split the CSV data into rows
-    const rows = csvData.split("\n");
+  function parseCSV(csvData, callback) {
+    const stream = new Readable();
+    stream.push(csvData);
+    stream.push(null); // Signals the end of the stream
+    let records = [];
 
-    // Get the headers (first row)
-    const headers = rows[0].split(",");
-
-    // Initialize an empty array to store the parsed products
-    const products = [];
-
-    // Iterate over each row (starting from the second row)
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i].split(",");
-      let parsedRow = [];
-      let quoted = false;
-      row.forEach((element) => {
-        if (quoted) {
-          parsedRow[parsedRow.length - 1] += `,${element}`;
-          if (element.endsWith('"')) {
-            quoted = false;
-          }
-        } else {
-          if (element.startsWith('"')) {
-            quoted = true;
-          }
-          parsedRow.push(element);
-        }
+    stream
+      .pipe(csv())
+      .on("data", (data) => records.push(data))
+      .on("end", () => {
+        callback(records);
       });
-
-      if (parsedRow.length === headers.length) {
-        // Initialize an empty object to store the product data
-        const product = {};
-        // Iterate over each column in the row
-        for (let j = 0; j < headers.length; j++) {
-          // Assign the value to the corresponding header key
-          product[headers[j].trim()] = parsedRow[j].replace(/["']/g, "").trim(); // Remove quotes and trim spaces
-        }
-        // Add the product object to the products array
-        products.push(product);
-      }
-    }
-
-    return products;
-  };
+  }
 
   const structureProducts = (parsedProducts) => {
     let structuredProducts = parsedProducts.map((product) => {
@@ -93,6 +65,12 @@ const ViewRequest = () => {
         salesPrice: structuredProduct.salesPrice,
       };
 
+      // Structuring tags
+      let updated_tags = structuredProduct.tags
+        .split(",")
+        .filter((tag) => tag !== "")
+        .map((tag) => tag.trim());
+
       // deleting all the extra key value pairs
       delete structuredProduct.descriptionHeading;
       delete structuredProduct.description;
@@ -104,11 +82,10 @@ const ViewRequest = () => {
       structuredProduct.description = formattedDescription;
       structuredProduct.imagePaths = updated_image_paths;
       structuredProduct.pricing = structured_pricing;
+      structuredProduct.tags = updated_tags;
 
       return structuredProduct;
     });
-
-    console.log(structuredProducts);
     return structuredProducts;
   };
 
@@ -146,6 +123,7 @@ const ViewRequest = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       const { data } = await axios.post("/api/bulk-upload/fetch-request", {
         request_id,
@@ -157,14 +135,25 @@ const ViewRequest = () => {
         const csvFile = await axios.get(data.bulk_upload_request.filePath);
 
         // Parse CSV data and store products as an array of objects
-        const parsedProducts = parseCSV(csvFile.data);
-        const structuredProducts = structureProducts(parsedProducts);
-        setProducts(structuredProducts);
+        parseCSV(csvFile.data, (records) => {
+          // console.log(records);
+          const structuredProducts = structureProducts(records);
+          setProducts(structuredProducts);
+        });
       } else {
         console.log("An error occurred");
       }
+      setLoading(false);
     })();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-white p-5 flex items-center justify-center">
+        <OvalLoader />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-3 rounded-md flex flex-col">
