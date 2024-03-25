@@ -22,7 +22,6 @@ import ViewBulkProduct from "./ViewBulkProduct";
 
 const BulkProductList = ({ products }) => {
   const [productsData, setProductsData] = useState(products);
-  console.log(productsData);
 
   return (
     <div className="p-4 bg-white rounded-xl shadow-sm overflow-scroll">

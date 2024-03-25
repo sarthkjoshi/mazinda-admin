@@ -107,8 +107,6 @@ const ViewRequest = () => {
           },
         });
 
-        console.log(data);
-
         if (data.success) {
           counter += 1;
         } else {

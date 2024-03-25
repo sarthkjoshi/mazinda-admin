@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const BulkUploadRequest = () => {
   const [requests, setRequests] = useState([]);
-
+  const router = useRouter();
   useEffect(() => {
     (async () => {
       const { data } = await axios.post("/api/bulk-upload/fetch-all-requests");
@@ -19,6 +20,23 @@ const BulkUploadRequest = () => {
       }
     })();
   }, []);
+
+  const handleDelete = async (requestId) => {
+    try {
+      console.log("sd", requestId);
+      const response = await axios.delete("/api/bulk-upload/delete-request", {
+        data: { requestId },
+      });
+      // After deletion, fetch data again to update the UI
+      if (response.data.success) {
+        router.refresh();
+      } else {
+        console.log(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting request:", error);
+    }
+  };
 
   return (
     <div>
@@ -38,6 +56,15 @@ const BulkUploadRequest = () => {
             </div>
 
             <div className="flex gap-2">
+              <span
+                className={`font-bold border-2 rounded-xl px-1 py-1 ${
+                  request.approved === "true"
+                    ? "border-green-500 text-green-500"
+                    : "border-red-500 text-red-500"
+                }`}
+              >
+                {request.approved === "true" ? "Approved" : "Pending"}
+              </span>
               <Button>
                 <a href={request.filePath} download>
                   Download File
@@ -49,6 +76,12 @@ const BulkUploadRequest = () => {
                 >
                   View
                 </Link>
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => handleDelete(request._id)}
+              >
+                Delete
               </Button>
             </div>
           </div>
