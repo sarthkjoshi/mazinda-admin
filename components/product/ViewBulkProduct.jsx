@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Badge } from "../ui/badge";
-
+import { useSearchParams } from "next/navigation";
 const ViewBulkProduct = ({ productData }) => {
   const [editing, setEditing] = useState(false);
   const [editedData, setEditedData] = useState({ ...productData });
+  const searchParams = useSearchParams();
+
+  const bulkRequest_id = searchParams.get("request_id");
 
   const toggleEditing = () => {
     setEditing(!editing);
@@ -20,8 +23,26 @@ const ViewBulkProduct = ({ productData }) => {
   };
 
   const handleSave = () => {
-    // Call save function here, pass editedData
-    // After saving, exit edit mode
+    const existingData = localStorage.getItem(bulkRequest_id);
+    let newDataArray = [];
+
+    if (existingData) {
+      const parsedData = JSON.parse(existingData);
+
+      if (Array.isArray(parsedData)) {
+        newDataArray = [...parsedData, [editedData, editing]];
+      } else {
+        newDataArray = [
+          [parsedData, false],
+          [editedData, editing],
+        ];
+      }
+    } else {
+      newDataArray = [[editedData, editing]];
+    }
+
+    // Store the updated array back into local storage
+    localStorage.setItem(bulkRequest_id, JSON.stringify(newDataArray));
     setEditing(false);
   };
 

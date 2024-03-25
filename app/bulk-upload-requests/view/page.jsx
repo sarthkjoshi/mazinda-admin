@@ -20,7 +20,7 @@ const ViewRequest = () => {
 
   const [loading, setLoading] = useState(true);
   const [approveLoading, setApproveLoading] = useState(false);
-
+  const [edited, setEdited] = useState(false);
   function parseCSV(csvData, callback) {
     const stream = new Readable();
     stream.push(csvData);
@@ -144,7 +144,15 @@ const ViewRequest = () => {
       setLoading(false);
     })();
   }, []);
-
+  useEffect(() => {
+    const localStorageData = localStorage.getItem(request_id);
+    if (localStorageData) {
+      const parsedData = JSON.parse(localStorageData);
+      if (Array.isArray(parsedData) && parsedData.length > 0) {
+        setEdited(true);
+      }
+    }
+  }, [request_id]);
   if (loading) {
     return (
       <div className="bg-white p-5 flex items-center justify-center">
@@ -168,12 +176,19 @@ const ViewRequest = () => {
             Approving
           </Button>
         ) : (
-          <Button
-            className="bg-green-500 hover:bg-green-600"
-            onClick={handleApprove}
-          >
-            Approve
-          </Button>
+          <div className="flex gap-3">
+            {edited && (
+              <span className="bg-yellow-500 text-white px-2 py-2 rounded-md text-sm">
+                Edited
+              </span>
+            )}
+            <Button
+              className="bg-green-500 hover:bg-green-600"
+              onClick={handleApprove}
+            >
+              Approve
+            </Button>
+          </div>
         )}
       </div>
 
