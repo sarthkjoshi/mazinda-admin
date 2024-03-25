@@ -76,7 +76,7 @@ const BulkUploadRequest = () => {
                 >
                   View
                 </Link>
-              </Button>{" "}
+              </Button>
               <Button
                 variant="destructive"
                 onClick={() => handleDelete(request._id)}

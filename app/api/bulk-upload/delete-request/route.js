@@ -11,7 +11,7 @@ export async function DELETE(req) {
     const bulk_upload_request = await BulkUploadRequest.findById(requestId);
 
     await bulk_upload_request.deleteOne();
-    console.log("hii", bulk_upload_request);
+
     return NextResponse.json({
       success: true,
       message: "Request deleted",
