@@ -27,7 +27,7 @@ const BulkUploadRequest = () => {
       const response = await axios.delete("/api/bulk-upload/delete-request", {
         data: { requestId },
       });
-      // After deletion, fetch data again to update the UI
+
       if (response.data.success) {
         router.refresh();
       } else {

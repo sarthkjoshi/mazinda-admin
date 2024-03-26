@@ -49,9 +49,10 @@ const BulkProductList = ({ products }) => {
                 <TableCell>
                   <Badge variant={"secondary"}>{product.subcategory}</Badge>
                 </TableCell>
-                <TableCell>₹{product?.pricing?.mrp}</TableCell>
-                <TableCell>₹{product?.pricing?.costPrice}</TableCell>
-                <TableCell>₹{product?.pricing?.salesPrice}</TableCell>
+                <TableCell>₹{product?.mrp}</TableCell>
+                <TableCell>₹{product?.costPrice}</TableCell>
+                <TableCell>₹{product?.salesPrice}</TableCell>
+                {console.log(product)}
 
                 <TableCell>
                   <Drawer>
