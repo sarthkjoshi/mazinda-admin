@@ -15,7 +15,7 @@ const ViewRequest = () => {
   const request_id = searchParams.get("request_id");
 
   const [products, setProducts] = useState([]);
-
+  const [date, setDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [approveLoading, setApproveLoading] = useState(false);
   const [edited, setEdited] = useState(false);
@@ -58,6 +58,7 @@ const ViewRequest = () => {
         request_id,
       });
       if (data.success) {
+        setDate(data.bulk_upload_request.createdAt);
         setProducts(data.bulk_upload_request.requestProducts);
       } else {
         console.log("An error occurred");
@@ -80,7 +81,7 @@ const ViewRequest = () => {
         <div className="flex flex-col">
           <span className="text-lg">{products.storeName}</span>
           <span className="text-sm text-gray-500">
-            {new Date(products.createdAt).toLocaleString()}
+            {new Date(date).toLocaleString()}
           </span>
         </div>
         {approveLoading ? (
