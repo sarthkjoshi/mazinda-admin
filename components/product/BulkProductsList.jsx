@@ -65,7 +65,7 @@ const BulkProductList = ({ products }) => {
                       </DrawerHeader>
 
                       <div className="overflow-auto">
-                        <ViewBulkProduct productData={product} />
+                        <ViewBulkProduct productData={product} index={index} />
                       </div>
                     </DrawerContent>
                   </Drawer>

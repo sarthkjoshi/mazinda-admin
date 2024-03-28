@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   try {
     const { productData } = await req.json();
-    console.log("hi", productData);
     const {
       productName,
       storeId,

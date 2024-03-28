@@ -4,15 +4,17 @@ import { Badge } from "../ui/badge";
 import Image from "next/image";
 import axios from "axios";
 import { Button } from "../ui/button";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-const ViewBulkProduct = ({ productData }) => {
+
+const ViewBulkProduct = ({ productData, index }) => {
   const [editableData, setEditableData] = useState({ ...productData });
   const [isEditing, setIsEditing] = useState(false);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const request_id = searchParams.get("request_id");
   const handleInputChange = (e) => {
@@ -57,7 +59,25 @@ const ViewBulkProduct = ({ productData }) => {
     setSelectedSubcategory(value);
     setEditableData({ ...editableData, subcategory: value });
   };
+  const handleDelete = async () => {
+    try {
+      const { data } = await axios.delete(
+        "/api/bulk-upload/delete-individual-request",
+        {
+          data: { request_id, index },
+        }
+      );
 
+      if (data.success) {
+        toast.success("Product deleted successfully");
+        router.refresh();
+      } else {
+        toast.error("Failed to delete product");
+      }
+    } catch (error) {
+      toast.error("Failed to delete product", error);
+    }
+  };
   useEffect(() => {
     async function getCategories() {
       try {
@@ -74,7 +94,7 @@ const ViewBulkProduct = ({ productData }) => {
     <div className="container mx-auto p-4 bg-white shadow-sm rounded-xl">
       <>
         <div className="space-y-4">
-          <div className="flex gap-5 items-center">
+          <div className="flex gap-5 items-center justify-between">
             <div className="relative">
               {isEditing ? (
                 <input
@@ -93,6 +113,10 @@ const ViewBulkProduct = ({ productData }) => {
                 />
               )}
             </div>
+
+            <Button className="btn btn-danger" onClick={handleDelete}>
+              Delete
+            </Button>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -108,6 +132,7 @@ const ViewBulkProduct = ({ productData }) => {
                 <span>{editableData.productName}</span>
               )}
             </div>
+
             <div>
               <Label className="font-semibold">Category: </Label>
               {isEditing ? (
