@@ -28,13 +28,22 @@ const ViewRequest = () => {
         const { data } = await axios.post("/api/product/add", {
           productData: {
             productName: product.productName,
-            storeId: request.storeId,
+            storeId: request_id,
             category: product.category,
             subcategory: product.subcategory,
-            imagePaths: product.imagePaths,
-            pricing: product.pricing,
-            description: product.description,
-            tags: product.tags || [],
+            imagePaths: [product.imagePaths],
+            pricing: {
+              mrp: product.mrp,
+              costPrice: product.costPrice,
+              salesPrice: product.salesPrice,
+            },
+            description: [
+              {
+                description: product.description,
+                descriptionHeading: product.descriptionHeading,
+              },
+            ],
+            tags: [product.tags],
           },
         });
 
@@ -44,10 +53,10 @@ const ViewRequest = () => {
           console.log("product failed to add");
         }
       } catch (e) {
-        toast.error("A product failed to add");
+        toast.error("A product failed to add" + e);
       }
     }
-    toast.success(`${counter} products added successfully`);
+    // toast.success(`${counter} products added successfully`);
     setApproveLoading(false);
   };
 
