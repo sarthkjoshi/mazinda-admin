@@ -1,220 +1,298 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Badge } from "../ui/badge";
-import { useSearchParams } from "next/navigation";
-const ViewBulkProduct = ({ productData }) => {
-  const [editing, setEditing] = useState(false);
-  const [editedData, setEditedData] = useState({ ...productData });
+import Image from "next/image";
+import axios from "axios";
+import { Button } from "../ui/button";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+
+const ViewBulkProduct = ({ productData, index }) => {
+  const [editableData, setEditableData] = useState({ ...productData });
+  const [isEditing, setIsEditing] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const bulkRequest_id = searchParams.get("request_id");
-
-  const toggleEditing = () => {
-    setEditing(!editing);
-
-    if (!editing) setEditedData({ ...productData });
+  const request_id = searchParams.get("request_id");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditableData({ ...editableData, [name]: value });
   };
 
-  const handleChange = (e, field) => {
-    setEditedData({
-      ...editedData,
-      [field]: e.target.value,
-    });
+  const handleCancel = () => {
+    setEditableData({ ...productData });
+    setIsEditing(false);
   };
 
-  const handleSave = () => {
-    const existingData = localStorage.getItem(bulkRequest_id);
-    let newDataArray = [];
+  const handleSave = async () => {
+    try {
+      const { data } = await axios.post(`/api/bulk-upload/update-request/`, {
+        editableData,
+        request_id,
+      });
 
-    if (existingData) {
-      const parsedData = JSON.parse(existingData);
-
-      if (Array.isArray(parsedData)) {
-        newDataArray = [...parsedData, [editedData, editing]];
+      if (data.success) {
+        setIsEditing(false);
+        toast.success("Product data updated successfully");
       } else {
-        newDataArray = [
-          [parsedData, false],
-          [editedData, editing],
-        ];
+        setIsEditing(false);
+        toast.error("Failed to update product data");
       }
-    } else {
-      newDataArray = [[editedData, editing]];
+    } catch (error) {
+      setIsEditing(false);
+      toast.error("Failed to update product data", error);
     }
-
-    // Store the updated array back into local storage
-    localStorage.setItem(bulkRequest_id, JSON.stringify(newDataArray));
-    setEditing(false);
   };
+
+  const handleCategoryChange = (e) => {
+    const { value } = e.target;
+    setSelectedCategory(value);
+    setSelectedSubcategory(""); // Reset subcategory when changing category
+    setEditableData({ ...editableData, category: value, subcategory: "" });
+  };
+
+  const handleSubcategoryChange = (e) => {
+    const { value } = e.target;
+    setSelectedSubcategory(value);
+    setEditableData({ ...editableData, subcategory: value });
+  };
+  const handleDelete = async () => {
+    try {
+      const { data } = await axios.delete(
+        "/api/bulk-upload/delete-individual-request",
+        {
+          data: { request_id, index },
+        }
+      );
+
+      if (data.success) {
+        toast.success("Product deleted successfully");
+        router.refresh();
+      } else {
+        toast.error("Failed to delete product");
+      }
+    } catch (error) {
+      toast.error("Failed to delete product", error);
+    }
+  };
+  useEffect(() => {
+    async function getCategories() {
+      try {
+        const response = await axios.get("/api/category/fetch-categories");
+        setCategories(response.data.categories);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    }
+    getCategories();
+  }, []);
 
   return (
     <div className="container mx-auto p-4 bg-white shadow-sm rounded-xl">
-      <div className="space-y-4">
-        <div className="flex gap-5 items-center">
-          {editing ? (
-            <input
-              type="text"
-              value={editedData.imagePath}
-              onChange={(e) => handleChange(e, "imagePath")}
-              placeholder="Enter image URL"
-            />
-          ) : (
-            <>
-              {editedData.imagePaths.map((img_path, index) => (
-                <div key={index} className="relative">
-                  <img
-                    className="border aspect-square object-contain p-2 rounded-sm"
-                    height={100}
-                    width={100}
-                    src={img_path}
-                    alt="product"
-                  />
-                </div>
-              ))}
-            </>
-          )}
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label className="font-semibold">Product Name: </Label>
-            {editing ? (
-              <input
-                type="text"
-                value={editedData.productName}
-                onChange={(e) => handleChange(e, "productName")}
-              />
-            ) : (
-              <span>{editedData.productName}</span>
-            )}
-          </div>
-        </div>
+      <>
+        <div className="space-y-4">
+          <div className="flex gap-5 items-center justify-between">
+            <div className="relative">
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="productName"
+                  value={editableData.imagePaths}
+                  onChange={handleInputChange}
+                />
+              ) : (
+                <Image
+                  className="border aspect-square object-contain p-2 rounded-sm"
+                  height={100}
+                  width={100}
+                  src={editableData.imagePaths}
+                  alt="imgpath"
+                />
+              )}
+            </div>
 
-        <div className="grid grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <div>
-              <Label className="font-semibold">MRP: </Label>
-              {editing ? (
-                <input
-                  type="text"
-                  value={editedData.pricing.mrp}
-                  onChange={(e) => handleChange(e, "pricing.mrp")}
-                />
-              ) : (
-                <span>{editedData.pricing.mrp}</span>
-              )}
-            </div>
-            <div>
-              <Label className="font-semibold">Cost Price: </Label>
-              {editing ? (
-                <input
-                  type="text"
-                  value={editedData.pricing.costPrice}
-                  onChange={(e) => handleChange(e, "pricing.costPrice")}
-                />
-              ) : (
-                <span>{editedData.pricing.costPrice}</span>
-              )}
-            </div>
-            <div>
-              <Label className="font-semibold">Sales Price: </Label>
-              {editing ? (
-                <input
-                  type="text"
-                  value={editedData.pricing.salesPrice}
-                  onChange={(e) => handleChange(e, "pricing.salesPrice")}
-                />
-              ) : (
-                <span>{editedData.pricing.salesPrice}</span>
-              )}
-            </div>
+            <Button className="btn btn-danger" onClick={handleDelete}>
+              Delete
+            </Button>
           </div>
-
-          <div className="flex flex-col gap-2">
-            <div>
-              <Label className="font-semibold">Category: </Label>
-              {editing ? (
-                <input
-                  type="text"
-                  value={editedData.category}
-                  onChange={(e) => handleChange(e, "category")}
-                />
-              ) : (
-                <span>{editedData.category}</span>
-              )}
-            </div>
-            <div>
-              <Label className="font-semibold">Subcategory: </Label>
-              {editing ? (
-                <input
-                  type="text"
-                  value={editedData.subcategory}
-                  onChange={(e) => handleChange(e, "subcategory")}
-                />
-              ) : (
-                <span>{editedData.subcategory}</span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Show subcategories based on the selected category */}
-        {productData.category && (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="font-semibold">Description:</Label>
-              {editedData.description.map((desc, index) => (
-                <div
-                  key={index}
-                  className="border flex flex-col p-2 rounded-md mb-2 gap-2"
-                >
-                  <span className="">{desc.heading}</span>
-                  {editing ? (
-                    <input
-                      type="text"
-                      value={desc.description}
-                      onChange={(e) =>
-                        handleChange(e, `description[${index}].description`)
-                      }
-                    />
-                  ) : (
-                    <p className="text-gray-500 text-sm">{desc.description}</p>
-                  )}
-                </div>
-              ))}
+              <Label className="font-semibold">Product Name: </Label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="productName"
+                  value={editableData.productName}
+                  onChange={handleInputChange}
+                />
+              ) : (
+                <span>{editableData.productName}</span>
+              )}
             </div>
 
-            <div className="mb-4">
-              <Label htmlFor="tags" className="font-semibold">
-                Tags:
-              </Label>
-              {editedData.tags && editedData.tags.length ? (
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {editedData.tags.map((tag, index) => (
-                    <Badge variant="secondary" key={index}>
-                      {tag}
-                    </Badge>
+            <div>
+              <Label className="font-semibold">Category: </Label>
+              {isEditing ? (
+                <select
+                  name="category"
+                  value={selectedCategory}
+                  onChange={handleCategoryChange}
+                >
+                  <option value="">Select a Category</option>
+                  {categories.map((category, index) => (
+                    <option key={index} value={category.categoryName}>
+                      {category.categoryName}
+                    </option>
                   ))}
-                </div>
-              ) : null}
+                </select>
+              ) : (
+                <span>{editableData.category}</span>
+              )}
             </div>
           </div>
-        )}
 
-        {editing && (
-          <button
-            onClick={handleSave}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-          >
-            Save
-          </button>
-        )}
+          <div className="grid grid-cols-2">
+            <div className="flex flex-col gap-2">
+              <div>
+                <Label className="font-semibold">MRP: </Label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="mrp"
+                    value={editableData.mrp}
+                    onChange={handleInputChange}
+                  />
+                ) : (
+                  <span>{editableData.mrp}</span>
+                )}
+              </div>
+              <div>
+                <Label className="font-semibold">Cost Price: </Label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="costPrice"
+                    value={editableData.costPrice}
+                    onChange={handleInputChange}
+                  />
+                ) : (
+                  <span>{editableData.costPrice}</span>
+                )}
+              </div>
+              <div>
+                <Label className="font-semibold">Sales Price: </Label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="salesPrice"
+                    value={editableData.salesPrice}
+                    onChange={handleInputChange}
+                  />
+                ) : (
+                  <span>{editableData.salesPrice}</span>
+                )}
+              </div>
+            </div>
 
-        {!editing && (
-          <button
-            onClick={toggleEditing}
-            className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400"
+            <div className="flex flex-col gap-2">
+              <div>
+                <Label className="font-semibold">Subcategory: </Label>
+                {isEditing ? (
+                  <select
+                    name="subcategory"
+                    value={selectedSubcategory}
+                    onChange={handleSubcategoryChange}
+                    disabled={!selectedCategory} // Disable if no category selected
+                  >
+                    <option value="">Select a Subcategory</option>
+                    {/* Populate options based on selected category */}
+                    {categories
+                      .find((cat) => cat.categoryName === selectedCategory)
+                      ?.subcategories.map((subcategory, index) => (
+                        <option key={index} value={subcategory}>
+                          {subcategory}
+                        </option>
+                      ))}
+                  </select>
+                ) : (
+                  <span>{editableData.subcategory}</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {editableData.category && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="font-semibold">Description:</Label>
+
+                <div className="border flex flex-col p-2 rounded-md mb-2 gap-2">
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="descriptionHeading"
+                      value={editableData.descriptionHeading}
+                      onChange={handleInputChange}
+                    />
+                  ) : (
+                    <span>{editableData.descriptionHeading}</span>
+                  )}
+                  {isEditing ? (
+                    <textarea
+                      name="description"
+                      value={editableData.description}
+                      onChange={handleInputChange}
+                    />
+                  ) : (
+                    <p className="text-gray-500 text-sm">
+                      {editableData.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <Label htmlFor="tags" className="font-semibold">
+                  Tags:
+                </Label>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="tags"
+                      value={editableData.tags}
+                      onChange={handleInputChange}
+                    />
+                  ) : (
+                    <Badge variant="secondary">{editableData.tags}</Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </>
+
+      <div className="flex justify-end">
+        {isEditing ? (
+          <>
+            <Button className="btn btn-secondary mr-2" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button className="btn btn-primary" onClick={handleSave}>
+              Save
+            </Button>
+          </>
+        ) : (
+          <Button
+            className="btn btn-primary"
+            onClick={() => setIsEditing(true)}
           >
             Edit
-          </button>
+          </Button>
         )}
       </div>
     </div>
