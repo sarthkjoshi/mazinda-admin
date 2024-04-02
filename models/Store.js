@@ -13,6 +13,7 @@ const StoreSchema = new mongoose.Schema(
     openStatus: { type: Boolean, default: true },
     approvedStatus: { type: String, default: "pending" },
     disableShop: { type: Boolean, deafult: false },
+    servicable_pincodes: { type: Array },
   },
   { timestamps: true }
 );
