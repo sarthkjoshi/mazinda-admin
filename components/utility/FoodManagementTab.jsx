@@ -7,6 +7,7 @@ import VendorForm from "./VendorForm";
 import MoneyManagement from "./MoneyManagement";
 
 import FoodDetails from "./FoodDetails";
+import Priority from "./Priority";
 
 const FoodManagementTab = ({ filter }) => {
   const [activeTab, setActiveTab] = useState("foodorders");
@@ -130,7 +131,9 @@ const FoodManagementTab = ({ filter }) => {
           role="tabpanel"
           aria-labelledby="vendors-tab"
         >
-          <VendorDetailsPage />
+          <div className="flex gap-5 ">
+            <VendorDetailsPage /> <Priority />
+          </div>
         </div>
         <div
           className={`rounded-lg bg-gray-50 dark:bg-gray-800 ${

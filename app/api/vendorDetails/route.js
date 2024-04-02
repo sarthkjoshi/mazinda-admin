@@ -69,7 +69,6 @@ export async function POST(req) {
       vendor.menu = updatedVendor.menu;
       vendor.payPercentage = updatedVendor.payPercentage;
       vendor.whatsapp_group_id = updatedVendor.whatsapp_group_id;
-      vendor.priority = updatedVendor.priority;
       vendor.deliveryRequirements = updatedVendor.deliveryRequirements;
       vendor.description = updatedVendor.description;
       await vendor.save();

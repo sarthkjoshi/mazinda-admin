@@ -75,15 +75,6 @@ const VendorDetailsPage = () => {
     }));
   };
   // Use useEffect to fetch initial vendor data
-  useEffect(() => {
-    setFetchingData(true);
-    const fetchVendors = async () => {
-      const { data } = await axios.get("/api/vendorDetails");
-      setVendorData(data.vendors);
-      setFetchingData(false);
-    };
-    fetchVendors();
-  }, []);
 
   const [vendorData, setVendorData] = useState([]);
   const [openVendorId, setOpenVendorId] = useState(null);
@@ -98,7 +89,7 @@ const VendorDetailsPage = () => {
   );
   const [editedPayPercentage, setEditedPayPercentage] = useState({});
   const [editedWhatsappGroupId, setEditedWhatsappGroupId] = useState("");
-  const [editedPriority, setEditedPriority] = useState("");
+
   const [error, setError] = useState({});
   const handleEditClick = (vendorId) => {
     setEditMode((prevEditMode) => ({
@@ -195,9 +186,7 @@ const VendorDetailsPage = () => {
   const handleWhatsappGroupIdChange = (value) => {
     setEditedWhatsappGroupId(value);
   };
-  const handlePriorityChange = (value) => {
-    setEditedPriority(value);
-  };
+
   const handleSaveClick = async (vendorId) => {
     const updatedVendor = editedData[vendorId];
     const updatedDeliveryCharges = editedDeliveryCharges[vendorId];
@@ -207,7 +196,6 @@ const VendorDetailsPage = () => {
     updatedVendor.deliveryRequirements = editedDeliveryRequirements[vendorId];
     updatedVendor.payPercentage = editedPayPercentage[vendorId];
     updatedVendor.whatsapp_group_id = editedWhatsappGroupId;
-    updatedVendor.priority = editedPriority;
 
     setVendorData((prevData) =>
       prevData.map((vendor) =>
@@ -687,19 +675,7 @@ const VendorDetailsPage = () => {
                     )}
                   </div>
                   <br />
-                  <div className="flex gap-2">
-                    <b>Priority:</b>
-                    {editMode[vendor._id] ? (
-                      <Input
-                        type="text"
-                        value={editedPriority}
-                        onChange={(e) => handlePriorityChange(e.target.value)}
-                      />
-                    ) : (
-                      <div>{vendor.priority}</div>
-                    )}
-                  </div>
-                  <br />
+
                   <div>
                     <b>Delivery Requirements:</b>
                     {editMode[vendor._id] ? (
