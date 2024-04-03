@@ -1,13 +1,10 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { redirect } from "next/navigation";
 import Pie from "@/public/svg/Pie";
 import FourBlocks from "@/public/svg/FourBlocks";
-import Bell from "@/public/svg/Bell";
 import Users from "@/public/svg/Users";
 import ShoppingBag from "@/public/svg/ShoppingBag";
 import Logout from "@/public/svg/Logout";
@@ -125,17 +122,19 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-            {/* <li>
-              <Link
-                href="/delivery-boys"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              >
-                <Users />
-                <span className="flex-1 ml-3 whitespace-nowrap">
-                  Assign Delivery Boy
-                </span>
-              </Link>
-            </li> */}
+            {session?.user?.allowedPaths.includes("/delivery-persons") && (
+              <li>
+                <Link
+                  href="/delivery-persons"
+                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                >
+                  <Users />
+                  <span className="flex-1 ml-3 whitespace-nowrap">
+                    Manage Delivery Persons
+                  </span>
+                </Link>
+              </li>
+            )}
             {session?.user?.allowedPaths.includes("/categories") && (
               <li>
                 <Link

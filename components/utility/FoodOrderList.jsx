@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import OvalLoader from "./OvalLoader";
 import Mode from "./Mode";
 import { Button } from "../ui/button";
@@ -166,7 +166,10 @@ const FoodOrderList = () => {
 
   const handleAllDeliveredClick = async () => {
     setAllDeliveredButtonLoading(true);
-    const { data } = await axios.put("/api/admin/set-all-orders-delivered");
+    const { data } = await axios.put(
+      "/api/food/order/set-all-orders-delivered"
+    );
+    console.log(data);
     if (data.success) {
       toast.success(
         'All orders with "Processing" or "Out for delivery" set to "Delivered"'

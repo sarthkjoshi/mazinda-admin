@@ -1,5 +1,4 @@
 "use client";
-import React, { useState } from "react";
 
 import FoodOrdersList from "@/components/utility/FoodOrderList";
 import VendorDetailsPage from "./VendorsDetails";
@@ -7,14 +6,13 @@ import VendorForm from "./VendorForm";
 import MoneyManagement from "./MoneyManagement";
 
 import FoodDetails from "./FoodDetails";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Priority from "./Priority";
 
 const FoodManagementTab = ({ filter }) => {
-  const [activeTab, setActiveTab] = useState("foodorders");
-
-  const handleTabClick = (tabId) => {
-    setActiveTab(tabId);
-  };
+  const router = useRouter();
+  const activeTab = useSearchParams().get("active-tab") || "foodorders";
 
   return (
     <>
@@ -36,7 +34,7 @@ const FoodManagementTab = ({ filter }) => {
               role="tab"
               aria-controls="foodorders"
               aria-selected={activeTab === "foodorders"}
-              onClick={() => handleTabClick("foodorders")}
+              onClick={() => router.push(`?active-tab=foodorders`)}
             >
               Food Orders
             </button>
@@ -54,7 +52,7 @@ const FoodManagementTab = ({ filter }) => {
               role="tab"
               aria-controls="vendors"
               aria-selected={activeTab === "vendors"}
-              onClick={() => handleTabClick("vendors")}
+              onClick={() => router.push(`?active-tab=vendors`)}
             >
               Food Vendors
             </button>
@@ -71,7 +69,7 @@ const FoodManagementTab = ({ filter }) => {
               role="tab"
               aria-controls="vendor-form"
               aria-selected={activeTab === "vendor-form"}
-              onClick={() => handleTabClick("vendor-form")}
+              onClick={() => router.push(`?active-tab=vendor-form`)}
             >
               Add Vendor
             </button>
@@ -88,7 +86,7 @@ const FoodManagementTab = ({ filter }) => {
               role="tab"
               aria-controls="moneymanagement"
               aria-selected={activeTab === "moneymanagement"}
-              onClick={() => handleTabClick("moneymanagement")}
+              onClick={() => router.push(`?active-tab=moneymanagement`)}
             >
               Money Management
             </button>
@@ -105,7 +103,7 @@ const FoodManagementTab = ({ filter }) => {
               role="tab"
               aria-controls="cutlerydetails"
               aria-selected={activeTab === "cutlerydetails"}
-              onClick={() => handleTabClick("cutlerydetails")}
+              onClick={() => router.push(`?active-tab=cutlerydetails`)}
             >
               Additional Details
             </button>

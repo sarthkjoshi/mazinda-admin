@@ -2,7 +2,7 @@ import Category from "@/models/Category";
 import connectDB from "@/libs/mongoose";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function POST() {
   try {
     await connectDB();
     let categories = await Category.find();
