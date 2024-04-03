@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 import {
   AlertDialog,
@@ -49,7 +49,7 @@ const AvailableCategories = () => {
       ...selectedCategory,
       subcategories: newSubcategories,
     });
-    setNewSubcategory("")
+    setNewSubcategory("");
   };
 
   // const handleDeleteSubcategory = (index) => {
@@ -64,19 +64,22 @@ const AvailableCategories = () => {
   // };
 
   const handleSaveClick = async () => {
-    const { data } = await axios.post('/api/category/edit-category', { updated_category: selectedCategory });
+    const { data } = await axios.post("/api/category/edit-category", {
+      updated_category: selectedCategory,
+    });
     if (data.success) {
-      toast.success(data.message)
+      toast.success(data.message);
     } else {
-      toast.error(data.error)
+      toast.error(data.error);
     }
 
-    
     setEditingMode(false);
 
-    let temp_categories = categories.filter(category => category._id !== selectedCategory._id)
-    temp_categories.push(selectedCategory)
-    setCategories(temp_categories)
+    let temp_categories = categories.filter(
+      (category) => category._id !== selectedCategory._id
+    );
+    temp_categories.push(selectedCategory);
+    setCategories(temp_categories);
   };
 
   useEffect(() => {
@@ -111,7 +114,9 @@ const AvailableCategories = () => {
                     <Input
                       type="text"
                       value={newSubcategory}
-                      onChange={(e) => { setNewSubcategory(e.target.value) } }
+                      onChange={(e) => {
+                        setNewSubcategory(e.target.value);
+                      }}
                       className="my-2"
                     />
                     <span className="text-red-500 text-sm"></span>
