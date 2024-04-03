@@ -62,7 +62,6 @@ const StoreDetails = () => {
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
 
-    // Handle nested objects like pricing
     if (name.includes(".")) {
       const [fieldName, nestedField] = name.split(".");
       setStoreData({
@@ -73,11 +72,19 @@ const StoreDetails = () => {
         },
       });
     } else {
-      // Update the storeData object with the edited value
-      setStoreData({
-        ...storeData,
-        [name]: type === "checkbox" ? checked : value,
-      });
+      if (name === "serviceable_pincodes") {
+        setStoreData({
+          ...storeData,
+          serviceable_pincodes: value
+            .split(",")
+            .map((pincode) => pincode.trim()),
+        });
+      } else {
+        setStoreData({
+          ...storeData,
+          [name]: type === "checkbox" ? checked : value,
+        });
+      }
     }
   };
   const handleToggleDisableStore = async (id) => {
@@ -186,6 +193,44 @@ const StoreDetails = () => {
                     className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
                   />
                 </div>
+                <div>
+                  <label className="block font-semibold">
+                    Store Coordinates:
+                  </label>
+                  <div>
+                    <label className="block font-semibold">Longitude</label>
+                    <input
+                      type="text"
+                      name="storeCoordinates.longitude"
+                      value={storeData?.storeCoordinates?.longitude}
+                      onChange={handleChange}
+                      placeholder="long"
+                      className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                    />
+                    <label className="block font-semibold">Latitude</label>
+                    <input
+                      type="text"
+                      name="storeCoordinates.latitude"
+                      value={storeData?.storeCoordinates?.latitude}
+                      onChange={handleChange}
+                      placeholder="lat"
+                      className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                </div>{" "}
+                <div>
+                  <label className="block font-semibold">
+                    Serviceable Pincodes:
+                  </label>
+                  <input
+                    type="text"
+                    name="serviceable_pincodes"
+                    value={storeData?.serviceable_pincodes?.join(", ")}
+                    onChange={handleChange}
+                    placeholder="Enter serviceable pincodes separated by commas"
+                    className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
               </div>
             </form>
           ) : (
@@ -207,7 +252,6 @@ const StoreDetails = () => {
                       </p>
                     )}
                   </div>
-
                   <div>
                     <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
                       Store Name:
@@ -216,7 +260,6 @@ const StoreDetails = () => {
                       {storeData.storeName}
                     </p>
                   </div>
-
                   <div>
                     <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
                       Owner Name:
@@ -268,6 +311,28 @@ const StoreDetails = () => {
                       {", "}
                       {storeData.storeAddress.pincode}
                     </p>
+                  </div>{" "}
+                  <div>
+                    <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
+                      Store Coordinates
+                    </p>
+                    <p className="inline-block mx-2 text-lg space-x-6">
+                      <span>
+                        Longitude:{storeData?.storeCoordinates?.longitude}
+                      </span>
+                      <span>
+                        Latitude:
+                        {storeData?.storeCoordinates?.latitude}
+                      </span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
+                      Serviceable Pincodes:
+                    </p>
+                    <ul className="inline-block mx-2 text-lg space-x-6">
+                      {storeData.serviceable_pincodes.join(", ")}
+                    </ul>
                   </div>
                 </div>
               </div>
