@@ -1,49 +1,52 @@
 "use client";
 
-import EditIcon from '@mui/icons-material/Edit';
-import Link from 'next/link';
+import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "../ui/button";
 
-const AvailableStores = ( {stores} ) => {
+const AvailableStores = ({ stores, filter }) => {
+  if (!stores.length) {
+    return (
+      <div className="pt-7 pb-5">
+        <span className="text-gray-500">No {filter} stores </span>
+      </div>
+    );
+  }
   return (
     <div className="p-4 bg-white rounded-xl shadow-sm overflow-scroll">
-      <div className="font-semibold text-xl text-gray-800">
-        Available Stores
-      </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full ">
-          <thead className="border-b">
-            <tr>
-              <th className="py-3 text-gray-600">Store ID</th>
-              <th className="py-3 text-gray-600">Store Name</th>
-              <th className="py-3 text-gray-600">Location</th>
-              <th className="py-3 text-gray-600">Options</th>
-            </tr>
-          </thead>
-          <tbody>
-            {stores.map((store, index) => (
-              <tr key={index}>
-                <td className="text-center py-2 whitespace-nowrap border-b border-gray-300 text-gray-700">
-                  {store._id.slice(-5)}
-                </td>
-                <td className="text-center py-2 whitespace-nowrap border-b border-gray-300">
-                  {store.storeName}
-                </td>
-                <td className="text-center py-2 whitespace-nowrap border-b border-gray-300 text-green-500">
-                  {store.storeAddress.address}, {store.storeAddress.city}
-                </td>
-                <td className="text-center py-2 whitespace-nowrap border-b border-gray-300">
-                  <Link
-                    href={`/store-details?id=${store._id}`}
-                    className="mx-1 bg-yellow-300 hover:bg-yellow-700 text-gray-800 text-sm py-1 px-2 rounded-full"
-                  >
-                    <EditIcon className='text-white' />
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Id</TableHead>
+            <TableHead>Store Name</TableHead>
+            <TableHead>Location</TableHead>
+            <TableHead>Options</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {stores.map((store, index) => (
+            <TableRow key={index}>
+              <TableCell>{store._id.slice(-5)}</TableCell>
+              <TableCell>{store.storeName}</TableCell>
+              <TableCell>
+                {store.storeAddress?.address}, {store.storeAddress?.city}
+              </TableCell>
+              <TableCell className="text-right">
+                <Link href={`/store-details?id=${store._id}`}>
+                  <Button variant="secondary">Edit</Button>
+                </Link>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

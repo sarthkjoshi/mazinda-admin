@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import OvalLoader from "@/components/utility/OvalLoader";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 const StoreDetails = () => {
@@ -18,18 +18,19 @@ const StoreDetails = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.post("/api/store/fetch-store-by-id", {
+      const { data } = await axios.post("/api/store/fetch-store-by-id", {
         id,
       });
-      console.log(response.data.store);
-      if (response.data.success) {
-        setStoreData(response.data.store);
-        setLoading(false);
+      console.log(data.store);
+      if (data.success) {
+        setStoreData(data.store);
       } else {
         console.error("Error while fetching the store");
       }
     } catch (error) {
       console.error("Error fetching store data: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,19 +45,20 @@ const StoreDetails = () => {
   const handleSaveClick = async () => {
     setSaveLoading(true);
     try {
-      const response = await axios.put("/api/store/update-store", {
+      const { data } = await axios.put("/api/store/update-store", {
         storeData,
       });
-      if (response.data.success) {
-        toast.success(response.data.message, { autoClose: 3000 });
+      if (data.success) {
+        toast.success(data.message, { autoClose: 3000 });
       } else {
-        toast.error(response.data.message, { autoClose: 3000 });
+        toast.error(data.message, { autoClose: 3000 });
       }
     } catch (error) {
       console.error("Error saving product data: ", error);
+    } finally {
+      setIsEditing(false);
+      setSaveLoading(false);
     }
-    setIsEditing(false);
-    setSaveLoading(false);
   };
 
   const handleChange = (event) => {
@@ -237,20 +239,29 @@ const StoreDetails = () => {
             <div className="flex justify-between">
               <div>
                 <div>
-                  <div>
-                    {storeData.approvedStatus === "approved" ? (
-                      <p className="text-lg my-2 bg-green-200 px-3 py-1 rounded-full w-fit text-green-800">
-                        Approved
-                      </p>
-                    ) : storeData.approvedStatus === "rejected" ? (
-                      <p className="text-lg my-2 bg-green-200 px-3 py-1 rounded-full w-fit text-green-800">
-                        Rejected
-                      </p>
-                    ) : (
-                      <p className="text-lg my-2 bg-yellow-200 px-3 py-1 rounded-full w-fit text-yellow-500">
-                        Pending
-                      </p>
-                    )}
+                  <div className="flex items-center gap-5">
+                    <div>
+                      {storeData.approvedStatus === "approved" ? (
+                        <p className="text-sm my-2 bg-green-200 px-3 py-1 rounded-full w-fit text-green-800">
+                          Approved
+                        </p>
+                      ) : storeData.approvedStatus === "rejected" ? (
+                        <p className="text-sm my-2 bg-green-200 px-3 py-1 rounded-full w-fit text-green-800">
+                          Rejected
+                        </p>
+                      ) : (
+                        <p className="text-sm my-2 bg-yellow-200 px-3 py-1 rounded-full w-fit text-yellow-500">
+                          Pending
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="shop-disable"
+                        onClick={() => handleToggleDisableStore(id)}
+                      />
+                      <Label htmlFor="shop-disable">Store disable</Label>
+                    </div>
                   </div>
                   <div>
                     <p className="inline-block mx-2 my-3 font-semibold w-[240px] text-lg">
@@ -366,13 +377,6 @@ const StoreDetails = () => {
           )}
         </>
       )}
-      <div className="flex items-center space-x-2">
-        <Switch
-          id="shop-disable"
-          onClick={() => handleToggleDisableStore(id)}
-        />
-        <Label htmlFor="shop-disable">Store disable</Label>
-      </div>
     </div>
   );
 };
