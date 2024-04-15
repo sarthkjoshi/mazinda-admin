@@ -31,6 +31,37 @@ export default function CentralDatabase() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
 
+  const handleUpload = async () => {
+    setLoading(true);
+    let success = 0;
+    let failed = 0;
+
+    for (let i = 0; i < products.length; i++) {
+      const { productName, description, imagePaths } = products[i];
+      try {
+        const { data } = await axios.post(`/api/cdb/add-product`, {
+          productName,
+          description,
+          imagePaths,
+          category: selectedCategory,
+          subcategory: selectedSubcategory,
+        });
+        if (data.success) {
+          success++;
+          toast.success(data.message);
+        } else {
+          failed++;
+          toast.error(data.error);
+        }
+      } catch (error) {
+        failed++;
+        toast.error("Error adding product");
+      }
+    }
+    setLoading(false);
+    toast.info(`${success} products added successfully and ${failed} failed`);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -39,36 +70,7 @@ export default function CentralDatabase() {
           <Button
             onClick={async () => {
               if (currentIndex == 3) {
-                setLoading(true);
-                let success = 0;
-                let failed = 0;
-
-                for (let i = 0; i < 3; i++) {
-                  const { productName, description, imagePaths } = products[i];
-                  try {
-                    const { data } = await axios.post(`/api/cdb/add-product`, {
-                      productName,
-                      description,
-                      imagePaths,
-                      category: selectedCategory,
-                      subcategory: selectedSubcategory,
-                    });
-                    if (data.success) {
-                      success++;
-                      toast.success(data.message);
-                    } else {
-                      failed++;
-                      toast.error(data.error);
-                    }
-                  } catch (error) {
-                    failed++;
-                    toast.error("Error adding product");
-                  }
-                }
-                setLoading(false);
-                toast.info(
-                  `${success} products added successfully and ${failed} failed`
-                );
+                await handleUpload();
               } else {
                 router.push(`?ci=${parseInt(currentIndex) + 1}`);
               }
@@ -103,9 +105,9 @@ export default function CentralDatabase() {
         />
       ) : (
         <Page3
-          productDetailsJson={productDetailsJson}
           products={products}
           setProducts={setProducts}
+          productDetailsJson={productDetailsJson}
         />
       )}
     </div>
@@ -359,30 +361,160 @@ const Page2 = ({ setProductDetailsJson, setJsonValid }) => {
 };
 
 const Page3 = ({ products, setProducts, productDetailsJson }) => {
+  const [editingIndex, setEditingIndex] = useState(-1);
+
   useEffect(() => {
     if (Object.keys(productDetailsJson).length) {
       let newProducts = []; // Create a new array to store products
       for (let i = 0; i < productDetailsJson["title"].length; i++) {
+        const filteredDescription = productDetailsJson["description"][i]
+          .map((desc) => {
+            if (desc.heading === "Disclaimer") {
+              return {
+                heading: "Disclaimer",
+                description:
+                  "We strive to ensure the accuracy of all information provided. However, please note that actual product packaging and materials may contain additional or differing information. It is advisable not to solely depend on the presented information.",
+              };
+            } else if (desc.heading === "Customer Care Details") {
+              return {
+                heading: "Customer Care Details",
+                description: "+91 7876901177",
+              };
+            } else {
+              const bannedHeadings = [
+                "Manufacturer Details",
+                "FSSAI License",
+                "Return Policy",
+                "Seller",
+                "Seller FSSAI",
+              ];
+              if (!bannedHeadings.includes(desc.heading)) {
+                return desc;
+              }
+            }
+          })
+          .filter(Boolean); // Remove any undefined or null values
         newProducts.push({
           productName: productDetailsJson["title"][i],
           imagePaths: productDetailsJson["images"][i],
-          description: productDetailsJson["description"][i],
+          description: filteredDescription,
         });
       }
       setProducts(newProducts); // Set the new array as the state
     }
   }, [productDetailsJson]);
 
+  const handleEdit = (index) => {
+    setEditingIndex(index);
+  };
+
+  const handleSave = (index, updatedProduct) => {
+    const updatedProducts = [...products];
+    updatedProducts[index] = updatedProduct;
+    setProducts(updatedProducts);
+    setEditingIndex(-1);
+  };
+  console.log(products);
   return (
     <div>
       {!Object.keys(productDetailsJson).length && <span>Data not found</span>}
-      {products.length &&
-        products.map((product) => (
-          <div className="rounded-lg flex items-center gap-5 bg-white p-2 mb-2 border">
-            <img src={product.imagePaths[0]} className="h-16 w-16" />
-            <span>{product.productName}</span>
+      {products.map((product, index) => (
+        <div
+          key={index}
+          className="rounded-lg flex items-center gap-5 bg-white p-2 mb-2 border"
+        >
+          {editingIndex === index ? (
+            <EditProduct
+              product={product}
+              onSave={(updatedProduct) => handleSave(index, updatedProduct)}
+            />
+          ) : (
+            <>
+              <img src={product.imagePaths[0]} className="h-16 w-16" />
+              <span>{product.productName}</span>
+              <Button onClick={() => handleEdit(index)}>Edit</Button>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const EditProduct = ({ product, onSave }) => {
+  const [productName, setProductName] = useState(product.productName);
+  const [imagePaths, setImagePaths] = useState(product.imagePaths);
+  const [description, setDescription] = useState(product.description);
+
+  const handleImagePathRemove = (index) => {
+    const updatedImagePaths = [...imagePaths];
+    updatedImagePaths.splice(index, 1);
+    setImagePaths(updatedImagePaths);
+  };
+
+  const handleDescriptionChange = (index, newHeading, newDesc) => {
+    const updatedDescription = [...description];
+    updatedDescription[index] = { heading: newHeading, description: newDesc };
+    setDescription(updatedDescription);
+  };
+
+  const handleRemoveDescription = (index) => {
+    const updatedDescription = [...description];
+    updatedDescription.splice(index, 1);
+    setDescription(updatedDescription);
+  };
+
+  const handleSave = () => {
+    onSave({ productName, imagePaths, description });
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-center gap-3">
+        Name:
+        <Input
+          value={productName}
+          onChange={(e) => setProductName(e.target.value)}
+        />
+      </div>
+      <div>
+        <p>Iamges:</p>
+        {imagePaths.map((path, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <img src={path} className="h-16 w-16" />
+            <Button onClick={() => handleImagePathRemove(index)}>Remove</Button>
           </div>
         ))}
+      </div>
+      <div>
+        <p>Descriptions:</p>
+        {description.map((desc, index) => (
+          <div
+            key={index}
+            className="flex flex-col gap-2 border p-3 rounded-lg mb-2"
+          >
+            Heading
+            <Input
+              value={desc.heading}
+              onChange={(e) =>
+                handleDescriptionChange(index, e.target.value, desc.description)
+              }
+            />
+            Description
+            <Textarea
+              value={desc.description}
+              onChange={(e) =>
+                handleDescriptionChange(index, desc.heading, e.target.value)
+              }
+            />
+            <Button onClick={() => handleRemoveDescription(index)}>
+              Remove
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      <Button onClick={handleSave}>Save</Button>
     </div>
   );
 };

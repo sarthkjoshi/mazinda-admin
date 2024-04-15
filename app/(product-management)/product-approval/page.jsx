@@ -16,11 +16,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
+import CBDProductList from "@/components/product/CDBProductList";
 
 const ProductPage = () => {
   const router = useRouter();
   const [productsLoading, setProductsLoading] = useState(true);
   const [products, setProducts] = useState([]);
+  const [CDBProducts, setCDBProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [stores, setStores] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -131,6 +133,18 @@ const ProductPage = () => {
     })();
   }, [currentPage, approval_status]);
 
+  useEffect(() => {
+    async function getCBDProd() {
+      const { data } = await axios.get("/api/cdb/fetch-all-products");
+      if (data.success) {
+        setCDBProducts(data.products);
+      } else {
+        console.log("error", data.message);
+      }
+    }
+    getCBDProd();
+  }, []);
+
   const handlePageChange = async (newPage) => {
     try {
       setProductsLoading(true);
@@ -182,6 +196,18 @@ const ProductPage = () => {
                 onClick={() => router.push("?approval-status=pending")}
               >
                 Pending
+              </TabsTrigger>{" "}
+              <TabsTrigger
+                value="pre"
+                onClick={() => router.push("?approval-status=pre-approved")}
+              >
+                Pre-approved
+              </TabsTrigger>{" "}
+              <TabsTrigger
+                value="auto"
+                onClick={() => router.push("?approval-status=auto-approved")}
+              >
+                Auto-approved
               </TabsTrigger>
             </TabsList>
             <TabsContent className="my-5" value="approved">
@@ -349,6 +375,54 @@ const ProductPage = () => {
 
               <ProductList products={products} />
               {products.length > 0 ? (
+                <div className="flex gap-1 justify-center mt-5">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button variant="outline">{currentPage}</Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              ) : (
+                <div></div>
+              )}
+            </TabsContent>
+            <TabsContent className="my-5" value="pre">
+              <div className="flex justify-between items-center">
+                {CDBProducts.length > 0 ? (
+                  <div className="flex gap-1">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <Button variant="outline">{currentPage}</Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+              </div>
+
+              <CBDProductList products={CDBProducts} />
+              {CDBProducts.length > 0 ? (
                 <div className="flex gap-1 justify-center mt-5">
                   <Button
                     type="button"
