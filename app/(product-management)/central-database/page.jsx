@@ -36,7 +36,7 @@ export default function CentralDatabase() {
     let success = 0;
     let failed = 0;
 
-    for (let i = 0; i < products.length; i++) {
+    for (let i = 0; i < 3; i++) {
       const { productName, description, imagePaths } = products[i];
       try {
         const { data } = await axios.post(`/api/cdb/add-product`, {
