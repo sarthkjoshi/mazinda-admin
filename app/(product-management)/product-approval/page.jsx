@@ -135,11 +135,19 @@ const ProductPage = () => {
 
   useEffect(() => {
     async function getCBDProd() {
-      const { data } = await axios.get("/api/cdb/fetch-all-products");
-      if (data.success) {
-        setCDBProducts(data.products);
-      } else {
-        console.log("error", data.message);
+      try {
+        const { data } = await axios.post("/api/cdb/fetch-all-products", {
+          page: 1,
+          pageSize: 50,
+        });
+        if (data.success) {
+          setCDBProducts(data.products);
+          setCurrentPage(data.currentPage);
+        } else {
+          console.log("error", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching CBD products:", error);
       }
     }
     getCBDProd();
@@ -151,7 +159,7 @@ const ProductPage = () => {
       const { data } = await axios.post("/api/product/fetch-all-products", {
         page: newPage,
         pageSize: 50,
-        approvalStatus: false,
+        approvalStatus: approval_status === "approved",
         selectedVendor: selectedVendor,
         selectedCategory: selectedCategory,
       });
@@ -164,6 +172,22 @@ const ProductPage = () => {
       }
     } catch (error) {
       console.error("Error fetching products: ", error);
+    } finally {
+      setProductsLoading(false);
+    }
+
+    try {
+      const { data } = await axios.post("/api/cdb/fetch-all-products", {
+        page: newPage,
+        pageSize: 50,
+      });
+      if (data.success) {
+        setCDBProducts(data.products);
+      } else {
+        console.log("error", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching CBD products: ", error);
     } finally {
       setProductsLoading(false);
     }
@@ -198,17 +222,11 @@ const ProductPage = () => {
                 Pending
               </TabsTrigger>{" "}
               <TabsTrigger
-                value="pre"
+                value="pre-approved"
                 onClick={() => router.push("?approval-status=pre-approved")}
               >
                 Pre-approved
               </TabsTrigger>{" "}
-              <TabsTrigger
-                value="auto"
-                onClick={() => router.push("?approval-status=auto-approved")}
-              >
-                Auto-approved
-              </TabsTrigger>
             </TabsList>
             <TabsContent className="my-5" value="approved">
               <div className="flex justify-between items-center">
@@ -396,7 +414,7 @@ const ProductPage = () => {
                 <div></div>
               )}
             </TabsContent>
-            <TabsContent className="my-5" value="pre">
+            <TabsContent className="my-5" value="pre-approved">
               <div className="flex justify-between items-center">
                 {CDBProducts.length > 0 ? (
                   <div className="flex gap-1">
