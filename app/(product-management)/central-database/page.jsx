@@ -76,6 +76,8 @@ export default function CentralDatabase() {
               }
             }}
             disabled={
+              (parseInt(currentIndex) === 1 &&
+                (!selectedCategory || !selectedSubcategory)) ||
               (parseInt(currentIndex) === 2 && !jsonValid) ||
               (parseInt(currentIndex) === 3 && !products.length) ||
               loading
