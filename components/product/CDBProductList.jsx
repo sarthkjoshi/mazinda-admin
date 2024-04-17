@@ -23,6 +23,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import CDBEditProduct from "./CDBEditProduct";
 
 const CBDProductList = ({ products }) => {
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -86,12 +87,14 @@ const CBDProductList = ({ products }) => {
                     onChange={(e) => {
                       const updatedProducts = productsData.map((p) =>
                         p._id === product._id
-                          ? { ...p, mrp: e.target.value }
+                          ? { ...p, mrp: e.target.value.replace(/[^0-9]/g, "") }
                           : p
                       );
                       setProductsData(updatedProducts);
                     }}
                     onBlur={() => handleSave(product._id)}
+                    pattern="[0-9]*"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                   />
                 </TableCell>
                 <TableCell>
@@ -101,12 +104,17 @@ const CBDProductList = ({ products }) => {
                     onChange={(e) => {
                       const updatedProducts = productsData.map((p) =>
                         p._id === product._id
-                          ? { ...p, costPrice: e.target.value }
+                          ? {
+                              ...p,
+                              costPrice: e.target.value.replace(/[^0-9]/g, ""),
+                            }
                           : p
                       );
                       setProductsData(updatedProducts);
                     }}
                     onBlur={() => handleSave(product._id)}
+                    pattern="[0-9]*"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                   />
                 </TableCell>
                 <TableCell>
@@ -116,12 +124,17 @@ const CBDProductList = ({ products }) => {
                     onChange={(e) => {
                       const updatedProducts = productsData.map((p) =>
                         p._id === product._id
-                          ? { ...p, salesPrice: e.target.value }
+                          ? {
+                              ...p,
+                              salesPrice: e.target.value.replace(/[^0-9]/g, ""),
+                            }
                           : p
                       );
                       setProductsData(updatedProducts);
                     }}
                     onBlur={() => handleSave(product._id)}
+                    pattern="[0-9]*"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                   />
                 </TableCell>
                 <TableCell>
@@ -139,7 +152,7 @@ const CBDProductList = ({ products }) => {
                         <DrawerTitle>Product Details</DrawerTitle>
                       </DrawerHeader>
                       <div className="overflow-auto">
-                        {/* No changes needed here */}
+                        <CDBEditProduct id={product._id} />
                       </div>
                     </DrawerContent>
                   </Drawer>
