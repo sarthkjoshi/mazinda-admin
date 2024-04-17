@@ -1,8 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -15,15 +14,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import CDBEditProduct from "./CDBEditProduct";
+import { Input } from "../ui/input";
 
 const CBDProductList = ({ products }) => {
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -81,7 +78,7 @@ const CBDProductList = ({ products }) => {
                 <TableCell>{product._id.slice(-5)}</TableCell>
                 <TableCell>{product.productName.slice(0, 30)}...</TableCell>
                 <TableCell>
-                  <input
+                  <Input
                     type="number"
                     value={product.mrp}
                     onChange={(e) => {
@@ -92,13 +89,13 @@ const CBDProductList = ({ products }) => {
                       );
                       setProductsData(updatedProducts);
                     }}
-                    onBlur={() => handleSave(product._id)}
+                    onBlur={() => product.mrp && handleSave(product._id)}
                     pattern="[0-9]*"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                   />
                 </TableCell>
                 <TableCell>
-                  <input
+                  <Input
                     type="number"
                     value={product.costPrice}
                     onChange={(e) => {
@@ -112,13 +109,13 @@ const CBDProductList = ({ products }) => {
                       );
                       setProductsData(updatedProducts);
                     }}
-                    onBlur={() => handleSave(product._id)}
+                    onBlur={() => product.costPrice && handleSave(product._id)}
                     pattern="[0-9]*"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                   />
                 </TableCell>
                 <TableCell>
-                  <input
+                  <Input
                     type="number"
                     value={product.salesPrice}
                     onChange={(e) => {
@@ -132,7 +129,9 @@ const CBDProductList = ({ products }) => {
                       );
                       setProductsData(updatedProducts);
                     }}
-                    onBlur={() => handleSave(product._id)}
+                    onBlur={() => {
+                      product.salesPrice && handleSave(product._id);
+                    }}
                     pattern="[0-9]*"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                   />
