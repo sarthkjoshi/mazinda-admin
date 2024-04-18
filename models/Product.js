@@ -18,6 +18,7 @@ const ProductSchema = new mongoose.Schema(
     description: { type: Array },
     isAvailable: { type: Boolean, default: true },
     approvalStatus: { type: Boolean, default: false },
+    store_disabled: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
